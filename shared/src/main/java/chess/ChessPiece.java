@@ -15,6 +15,13 @@ public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
 
+    private static final int[][] BISHOP_DIRECTIONS = {
+        {1,1}, //Up and right
+        {1,-1}, //Up and left
+        {-1,-1}, //Down and left
+        {-1,1} //Down and right
+    };
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
@@ -56,26 +63,21 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
         List<ChessMove> moves = new ArrayList<>();
+
         if (piece.getPieceType() == PieceType.BISHOP) {
-            int new_row = myPosition.getRow();
-            int new_col = myPosition.getColumn();
-            while (new_row < 8 && new_col < 8) {
-                moves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()), new ChessPosition(++new_row, ++new_col), null));
-            }
-            new_row = myPosition.getRow();
-            new_col = myPosition.getColumn();
-            while (new_row < 8 && new_col > 1) {
-                moves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()), new ChessPosition(++new_row, --new_col), null));
-            }
-            new_row = myPosition.getRow();
-            new_col = myPosition.getColumn();
-            while (new_row > 1 && new_col > 1) {
-                moves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()), new ChessPosition(--new_row, --new_col), null));
-            }
-            new_row = myPosition.getRow();
-            new_col = myPosition.getColumn();
-            while (new_row > 1 && new_col < 8) {
-                moves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()), new ChessPosition(--new_row, ++new_col), null));
+            for (int[] direction : BISHOP_DIRECTIONS) {
+                int row = myPosition.getRow();
+                int col = myPosition.getColumn();
+
+                while (true) {
+                    row += direction[0];
+                    col += direction[1];
+
+                    if (row < 1 || row > 8 || col < 1 || col > 8) {
+                        break;
+                    }
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row,col),null));
+                }
             }
         }
         return moves;
