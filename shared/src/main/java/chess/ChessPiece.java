@@ -69,6 +69,19 @@ public class ChessPiece {
         this.type = type;
     }
 
+    @Override
+    public String toString() {
+        String letterRep = switch (type) {
+            case ROOK -> "R";
+            case KNIGHT -> "N";
+            case BISHOP -> "B";
+            case QUEEN -> "Q";
+            case KING -> "K";
+            case PAWN -> "P";
+        };
+        return (pieceColor == ChessGame.TeamColor.WHITE ? letterRep : letterRep.toLowerCase());
+    }
+
     /**
      * The various different chess piece options
      */

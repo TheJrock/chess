@@ -84,4 +84,13 @@ public class ChessBoard {
             Arrays.fill(chessPieces, null);
         }
     }
+
+    @Override
+    public String toString() {
+
+
+        return "ChessBoard{" +
+                "board=" + Arrays.toString(board) +
+                '}';
+    }
 }
