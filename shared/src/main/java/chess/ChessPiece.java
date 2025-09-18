@@ -16,29 +16,30 @@ public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
 
-    private static final int[][] BISHOP_DIRECTIONS = {
+    private static final int[][] DIAGONAL_DIRECTIONS = {
             {1,1}, //Up and right
             {1,-1}, //Up and left
             {-1,-1}, //Down and left
             {-1,1} //Down and right
     };
-    private static final int[][] ROOK_DIRECTIONS = {
+    private static final int[][] STRAIGHT_DIRECTIONS = {
             {1,0}, //Up
             {0,-1}, //Left
             {-1,0}, //Down
             {0,1} //Right
     };
+    private static final int[][] ALL_DIRECTIONS;
 
-    private static final int[][] KING_QUEEN_DIRECTIONS = {
-            {1,1}, //Up and right
-            {1,-1}, //Up and left
-            {-1,-1}, //Down and left
-            {-1,1}, //Down and right
-            {1,0}, //Up
-            {0,-1}, //Left
-            {-1,0}, //Down
-            {0,1} //Right
-    };
+    static {
+        ALL_DIRECTIONS = new int[STRAIGHT_DIRECTIONS.length + DIAGONAL_DIRECTIONS.length][2];
+        int i = 0;
+        for (int[] direction : STRAIGHT_DIRECTIONS) {
+            ALL_DIRECTIONS[i++] = direction;
+        }
+        for (int[] direction : DIAGONAL_DIRECTIONS) {
+            ALL_DIRECTIONS[i++] = direction;
+        }
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -93,14 +94,14 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        ChessPiece piece = board.getPiece(myPosition);
+//        ChessPiece piece = board.getPiece(myPosition);
         List<ChessMove> moves = new ArrayList<>();
 
         int[][] directions = switch (type) {
-            case KING -> KING_QUEEN_DIRECTIONS;
-            case QUEEN -> KING_QUEEN_DIRECTIONS;
-            case BISHOP -> BISHOP_DIRECTIONS;
-            case ROOK -> ROOK_DIRECTIONS;
+            case KING -> ALL_DIRECTIONS;
+            case QUEEN -> ALL_DIRECTIONS;
+            case BISHOP -> DIAGONAL_DIRECTIONS;
+            case ROOK -> STRAIGHT_DIRECTIONS;
             default -> throw new IllegalStateException("Unexpected value: " + type);
         };
         for (int[] direction : directions) {
@@ -114,26 +115,23 @@ public class ChessPiece {
                 if (row < 1 || row > 8 || col < 1 || col > 8) {
                     break;
                 }
-                moves.add(new ChessMove(myPosition, new ChessPosition(row,col),null));
+
+                ChessPosition newPosition = new ChessPosition(row, col);
+                ChessPiece targetPiece = board.getPiece(newPosition);
+
+                if (targetPiece != null) {
+                    if (targetPiece.getTeamColor() != pieceColor) {
+                        moves.add(new ChessMove(myPosition, newPosition, null));
+                    }
+                    break;
+                }
+
+                moves.add(new ChessMove(myPosition, newPosition, null));
+                if (type == PieceType.KING) {
+                    break;
+                }
             }
         }
-
-//        if (piece.getPieceType() == PieceType.BISHOP) {
-//            for (int[] direction : BISHOP_DIRECTIONS) {
-//                int row = myPosition.getRow();
-//                int col = myPosition.getColumn();
-//
-//                while (true) {
-//                    row += direction[0];
-//                    col += direction[1];
-//
-//                    if (row < 1 || row > 8 || col < 1 || col > 8) {
-//                        break;
-//                    }
-//                    moves.add(new ChessMove(myPosition, new ChessPosition(row,col),null));
-//                }
-//            }
-//        }
         return moves;
     }
 }
