@@ -69,7 +69,7 @@ public class ChessBoard {
                 ChessPiece.PieceType.ROOK
         };
 
-        for (int column = 1; column < 8; column++) {
+        for (int column = 1; column <= 8; column++) {
             //Add White Pieces
             addPiece(new ChessPosition(1, column), new ChessPiece(ChessGame.TeamColor.WHITE, backRank[column-1]));
             addPiece(new ChessPosition(2, column), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
@@ -87,10 +87,22 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-
-
-        return "ChessBoard{" +
-                "board=" + Arrays.toString(board) +
-                '}';
+        StringBuilder stringRep = new StringBuilder();
+        for (int row = 8; row >= 1; row--) {
+            stringRep.append(row);
+            stringRep.append(" |");
+            for (int column = 1; column <= 8; column++) {
+                ChessPiece piece = getPiece(new ChessPosition(row, column));
+                if (piece != null) {
+                    stringRep.append(piece);
+                } else {
+                    stringRep.append(" ");
+                }
+                stringRep.append("|");
+            }
+            stringRep.append("\n");
+        }
+        stringRep.append("   a b c d e f g h");
+        return stringRep.toString();
     }
 }
