@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -9,7 +10,7 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
-
+    private ArrayList<ChessMove> gameHistory;
     public ChessGame() {
 
     }
@@ -106,5 +107,13 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         throw new RuntimeException("Not implemented");
+    }
+
+    public ChessMove getLastMove() {
+        return gameHistory.getLast();
+    }
+
+    public ArrayList<ChessMove> getHistory() {
+        return new ArrayList<>(gameHistory);
     }
 }

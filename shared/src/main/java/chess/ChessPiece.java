@@ -167,6 +167,7 @@ public class ChessPiece {
         int direction = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
         int startRow = (pieceColor == ChessGame.TeamColor.WHITE) ? 2 : 7;
         int promotionRow = (pieceColor == ChessGame.TeamColor.WHITE) ? 8 : 1;
+        int enPassantRow = (pieceColor == ChessGame.TeamColor.WHITE) ? 5 : 4;
 
         int row = position.getRow();
         int col = position.getColumn();
@@ -190,6 +191,8 @@ public class ChessPiece {
                 ChessPiece targetPiece = board.getPiece(capturePosition);
                 if (targetPiece != null && targetPiece.getTeamColor() != pieceColor) {
                     addPawnMove(position, capturePosition, promotionRow, moves);
+                } else if (row == enPassantRow && targetPiece == null) {
+                    if ()
                 }
             }
         }
