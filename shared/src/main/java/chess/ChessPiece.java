@@ -191,8 +191,8 @@ public class ChessPiece {
                 ChessPiece targetPiece = board.getPiece(capturePosition);
                 if (targetPiece != null && targetPiece.getTeamColor() != pieceColor) {
                     addPawnMove(position, capturePosition, promotionRow, moves);
-                } else if (row == enPassantRow && targetPiece == null) {
-                    if ()
+//                } else if (row == enPassantRow && targetPiece == null) {
+//                    if ()
                 }
             }
         }
