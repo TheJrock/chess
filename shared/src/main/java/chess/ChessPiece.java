@@ -196,56 +196,6 @@ public class ChessPiece {
                 }
             }
         }
-
-//        int forward;
-//        int initialRow;
-//        int promotionRow;
-//        if (pieceColor == ChessGame.TeamColor.BLACK) {
-//            forward = -1;
-//            initialRow = 7;
-//            promotionRow = 1;
-//        } else {
-//            forward = 1;
-//            initialRow = 2;
-//            promotionRow = 8;
-//        }
-//
-//        if (position.getRow() == promotionRow) {
-//            return;
-//        }
-//
-//        PieceType promotionPiece = null;
-//        if (position.getRow()+forward == promotionRow) {
-//            promotionPiece = PieceType.QUEEN;
-//        }
-//
-//        ChessPosition forwardPosition = new ChessPosition(position.getRow()+forward, position.getColumn());
-//        ChessPiece forwardPiece = board.getPiece(forwardPosition);
-//        if (forwardPiece == null) {
-//            moves.add(new ChessMove(position, forwardPosition, promotionPiece));
-//            if (position.getRow() == initialRow) {
-//                ChessPosition doubleForward = new ChessPosition(forwardPosition.getRow()+forward, position.getColumn());
-//                ChessPiece doubleForwardPiece = board.getPiece(doubleForward);
-//                if (doubleForwardPiece == null) {
-//                    moves.add(new ChessMove(position, doubleForward, promotionPiece));
-//                }
-//            }
-//        }
-//
-//        ChessPosition captureLeft = new ChessPosition(position.getRow()+forward, position.getColumn()-1);
-//        ChessPosition captureRight = new ChessPosition(position.getRow()+forward, position.getColumn()+1);
-//        ChessPiece leftPiece = board.getPiece(captureLeft);
-//        ChessPiece rightPiece = board.getPiece(captureRight);
-//        if (leftPiece != null && position.getColumn() != 1){
-//            if (leftPiece.getTeamColor() != pieceColor) {
-//                moves.add(new ChessMove(position, captureLeft, promotionPiece));
-//            }
-//        }
-//        if (rightPiece != null && position.getColumn() != 8) {
-//            if (rightPiece.getTeamColor() != pieceColor) {
-//                moves.add(new ChessMove(position, captureRight, promotionPiece));
-//            }
-//        }
     }
 
     private boolean isOnBoard(ChessPosition position) {
