@@ -13,19 +13,19 @@ import java.util.Objects;
 public class ChessGame {
     private ArrayList<ChessMove> gameHistory;
     private ChessBoard board;
-    private TeamColor turn;
+    private TeamColor teamTurn;
 
     public ChessGame() {
         board = new ChessBoard();
         setBoard(board);
-        turn = TeamColor.WHITE;
+        teamTurn = TeamColor.WHITE;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return teamTurn;
     }
 
     /**
@@ -34,7 +34,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        teamTurn = team;
     }
 
     @Override
@@ -43,12 +43,12 @@ public class ChessGame {
             return false;
         }
         ChessGame chessGame = (ChessGame) o;
-        return Objects.equals(gameHistory, chessGame.gameHistory) && Objects.equals(board, chessGame.board) && turn == chessGame.turn;
+        return Objects.equals(gameHistory, chessGame.gameHistory) && Objects.equals(board, chessGame.board) && teamTurn == chessGame.teamTurn;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(gameHistory, board, turn);
+        return Objects.hash(gameHistory, board, teamTurn);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ChessGame {
         return "ChessGame{" +
                 "gameHistory=" + gameHistory +
                 ", game_board=" + board +
-                ", team_turn=" + turn +
+                ", team_turn=" + teamTurn +
                 '}';
     }
 
@@ -78,7 +78,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
         Collection<ChessMove> validMoves = piece.pieceMoves(board, startPosition);
-        validMoves.removeIf(move -> isInCheck(turn));
+        validMoves.removeIf(move -> isInCheck(teamTurn));
         return validMoves;
     }
 
@@ -90,7 +90,7 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece piece = board.getPiece(move.getStartPosition());
-        if (turn == piece.getTeamColor()) {
+        if (teamTurn == piece.getTeamColor()) {
             for (ChessMove moveOption : validMoves(move.getStartPosition())) {
                 if (moveOption.equals(move)) {
                     break;
