@@ -47,6 +47,11 @@ public class ChessGame {
     }
 
     @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(gameHistory, board, teamTurn);
     }
@@ -77,9 +82,18 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
-        Collection<ChessMove> validMoves = piece.pieceMoves(board, startPosition);
-        validMoves.removeIf(move -> isInCheck(teamTurn));
-        return validMoves;
+        Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
+
+        for (ChessMove move : moves) {
+            ChessBoard newBoard = board.copy();
+            newBoard.addPiece(move.getEndPosition(), piece);
+            ChessGame newGame = new ChessGame();
+            newGame.setBoard(newBoard);
+            if (newGame.isInCheck(teamTurn)) {
+                moves.remove(move);
+            }
+        }
+        return moves;
     }
 
     /**
@@ -140,7 +154,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        board.resetBoard();
+        this.board = board;
     }
 
     /**
