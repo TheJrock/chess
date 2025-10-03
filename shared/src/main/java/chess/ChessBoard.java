@@ -9,7 +9,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
+public class ChessBoard implements Cloneable {
 
     @Override
     public boolean equals(Object o) {
@@ -21,20 +21,37 @@ public class ChessBoard {
     }
 
     @Override
+    public ChessBoard clone() {
+        //            ChessBoard clone = (ChessBoard) super.clone();
+        ChessPiece[][] boardClone = new ChessPiece[8][8];
+        for (int row = 0; row <= 7; row++) {
+            for (int col = 0; col <= 7; col++) {
+                ChessPiece piece = board[row][col];
+                ChessPiece pieceClone;
+                if (piece != null) {
+                    pieceClone = new ChessPiece(piece.getTeamColor(), piece.getPieceType());
+                } else {
+                    pieceClone = null;
+                }
+                boardClone[row][col] = pieceClone;
+            }
+        }
+//            clone = boardClone;
+        ChessBoard clone = new ChessBoard();
+        clone.setBoard(boardClone);
+        return clone;
+    }
+
+    @Override
     public int hashCode() {
         return Arrays.deepHashCode(board);
     }
 
-//    public ChessBoard copy() {
-//        ChessBoard copy = new ChessBoard();
-//        for (int row = 1; row <= board.length; row++) {
-//            for (int col = 1; col <= board.length; col++) {
-//                ChessPosition position = new ChessPosition(row, col);
-//                copy.addPiece(position, getPiece(position));
-//            }
-//        }
-//        return copy;
-//    }
+    public void setBoard(ChessPiece[][] board) {
+        for (int row = 0; row <= 7; row++) {
+            System.arraycopy(board[row], 1, this.board[row], 1, 7);
+        }
+    }
 
     private final ChessPiece[][] board;
     public ChessBoard() {
