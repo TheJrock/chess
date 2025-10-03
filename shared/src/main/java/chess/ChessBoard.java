@@ -22,23 +22,13 @@ public class ChessBoard implements Cloneable {
 
     @Override
     public ChessBoard clone() {
-        //            ChessBoard clone = (ChessBoard) super.clone();
-        ChessPiece[][] boardClone = new ChessPiece[8][8];
-        for (int row = 0; row <= 7; row++) {
-            for (int col = 0; col <= 7; col++) {
+        ChessBoard clone = new ChessBoard();
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
                 ChessPiece piece = board[row][col];
-                ChessPiece pieceClone;
-                if (piece != null) {
-                    pieceClone = new ChessPiece(piece.getTeamColor(), piece.getPieceType());
-                } else {
-                    pieceClone = null;
-                }
-                boardClone[row][col] = pieceClone;
+                clone.board[row][col] = (piece == null) ? null : new ChessPiece(piece);
             }
         }
-//            clone = boardClone;
-        ChessBoard clone = new ChessBoard();
-        clone.setBoard(boardClone);
         return clone;
     }
 

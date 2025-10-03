@@ -14,6 +14,7 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
+    private Boolean hasMoved;
 
     private static final int[][] KNIGHT_DIRECTIONS = {
             {2,1}, //Up and right
@@ -67,6 +68,12 @@ public class ChessPiece {
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
+    }
+
+    public ChessPiece(ChessPiece piece) {
+        pieceColor = piece.pieceColor;
+        type = piece.type;
+        hasMoved = piece.hasMoved;
     }
 
     @Override
