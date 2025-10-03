@@ -14,7 +14,7 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
-    private Boolean hasMoved;
+    public Boolean hasMoved;
 
     private static final int[][] KNIGHT_DIRECTIONS = {
             {2,1}, //Up and right
@@ -68,6 +68,7 @@ public class ChessPiece {
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
+        this.hasMoved = false;
     }
 
     public ChessPiece(ChessPiece piece) {
@@ -123,7 +124,6 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-//        ChessPiece piece = board.getPiece(myPosition);
         Collection<ChessMove> moves = new ArrayList<>();
 
         if (type != PieceType.PAWN) { //Logic for all pieces except pawns
@@ -135,6 +135,9 @@ public class ChessPiece {
                 case ROOK -> STRAIGHT_DIRECTIONS;
                 default -> throw new IllegalStateException("Unexpected value: " + type);
             };
+            if (type == PieceType.KING && !hasMoved) {
+                checkCastling(board, myPosition, moves);
+            }
             for (int[] direction : directions) {
                 int row = myPosition.getRow();
                 int col = myPosition.getColumn();
@@ -217,6 +220,23 @@ public class ChessPiece {
             moves.add(new ChessMove(from, to, PieceType.KNIGHT));
         } else {
             moves.add(new ChessMove(from, to, null));
+        }
+    }
+
+    private void checkCastling(ChessBoard board, ChessPosition position, Collection<ChessMove> moves) {
+        ChessPiece leftRook = board.getPiece(new ChessPosition(position.getRow(), 1));
+        ChessPiece rightRook = board.getPiece(new ChessPosition(position.getRow(), 8));
+        //Check left rook
+        if (leftRook != null && leftRook.getPieceType() == PieceType.ROOK && !leftRook.hasMoved) {
+            if (board.getPiece(new ChessPosition(position.getRow(), position.getColumn()-1)) == null && board.getPiece(new ChessPosition(position.getRow(), position.getColumn()-2)) == null && board.getPiece(new ChessPosition(position.getRow(), position.getColumn()-3)) == null) {
+                moves.add(new ChessMove(position, new ChessPosition(position.getRow(), position.getColumn()-2), null));
+            }
+        }
+        //Check right rook
+        if (rightRook != null && rightRook.getPieceType() == PieceType.ROOK && !rightRook.hasMoved) {
+            if (board.getPiece(new ChessPosition(position.getRow(), position.getColumn()+1)) == null && board.getPiece(new ChessPosition(position.getRow(), position.getColumn()+2)) == null) {
+                moves.add(new ChessMove(position, new ChessPosition(position.getRow(), position.getColumn()+2), null));
+            }
         }
     }
 }
