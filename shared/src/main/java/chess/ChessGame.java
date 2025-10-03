@@ -88,15 +88,14 @@ public class ChessGame {
         }
         Collection<ChessMove> allMoves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> validMoves = new ArrayList<>();
+        ChessGame simulator = new ChessGame();
 
         for (ChessMove move : allMoves) {
             ChessBoard boardCopy = new ChessBoard(board);
             boardCopy.addPiece(move.getEndPosition(), new ChessPiece(piece));
             boardCopy.addPiece(move.getStartPosition(), null);
-            ChessGame newGame = new ChessGame();
-            newGame.setBoard(boardCopy);
-            newGame.setTeamTurn(teamTurn);
-            if (!newGame.isInCheck(teamTurn)) {
+            simulator.setBoard(boardCopy);
+            if (!simulator.isInCheck(piece.getTeamColor())) {
                 validMoves.add(move);
             }
         }
