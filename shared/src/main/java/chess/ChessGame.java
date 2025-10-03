@@ -85,10 +85,12 @@ public class ChessGame {
         Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
 
         for (ChessMove move : moves) {
-            ChessBoard newBoard = board.copy();
+            ChessBoard newBoard = new ChessBoard(board);
             newBoard.addPiece(move.getEndPosition(), piece);
+            newBoard.addPiece(move.getStartPosition(), null);
             ChessGame newGame = new ChessGame();
             newGame.setBoard(newBoard);
+            newGame.setTeamTurn(teamTurn);
             if (newGame.isInCheck(teamTurn)) {
                 moves.remove(move);
             }
@@ -115,6 +117,7 @@ public class ChessGame {
             throw new InvalidMoveException();
         }
         board.addPiece(move.getEndPosition(), piece);
+        board.addPiece(move.getStartPosition(), null);
     }
 
     /**

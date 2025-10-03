@@ -25,20 +25,23 @@ public class ChessBoard {
         return Arrays.deepHashCode(board);
     }
 
-    public ChessBoard copy() {
-        ChessBoard copy = new ChessBoard();
-        for (int row = 1; row <= board.length; row++) {
-            for (int col = 1; col <= board.length; col++) {
-                ChessPosition position = new ChessPosition(row, col);
-                copy.addPiece(position, getPiece(position));
-            }
-        }
-        return copy;
-    }
+//    public ChessBoard copy() {
+//        ChessBoard copy = new ChessBoard();
+//        for (int row = 1; row <= board.length; row++) {
+//            for (int col = 1; col <= board.length; col++) {
+//                ChessPosition position = new ChessPosition(row, col);
+//                copy.addPiece(position, getPiece(position));
+//            }
+//        }
+//        return copy;
+//    }
 
-    private final ChessPiece[][] board = new ChessPiece[8][8];
+    private final ChessPiece[][] board;
     public ChessBoard() {
-        
+        board = new ChessPiece[8][8];
+    }
+    public ChessBoard(ChessBoard copy) {
+        board = Arrays.copyOf(copy.board, copy.board.length);
     }
 
     /**
