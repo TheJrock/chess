@@ -108,10 +108,9 @@ public class ChessBoard implements Cloneable {
     public ChessPosition findKing(ChessGame.TeamColor color) {
         for (int row = 1; row <= board.length; row++) {
             for (int col = 1; col <= board.length; col++) {
-                ChessPosition position = new ChessPosition(row, col);
-                ChessPiece piece = getPiece(position);
+                ChessPiece piece = getPiece(new ChessPosition(row,col));
                 if (piece != null && piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == color) {
-                    return position;
+                    return new ChessPosition(row,col);
                 }
             }
         }

@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 /**
@@ -82,20 +83,24 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
-        Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
+        if (piece == null) {
+            return Collections.emptyList();
+        }
+        Collection<ChessMove> allMoves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> validMoves = new ArrayList<>();
 
-        for (ChessMove move : moves) {
-            ChessBoard boardCopy = board.clone();
-            boardCopy.addPiece(move.getEndPosition(), piece);
+        for (ChessMove move : allMoves) {
+            ChessBoard boardCopy = new ChessBoard(board);
+            boardCopy.addPiece(move.getEndPosition(), new ChessPiece(piece));
             boardCopy.addPiece(move.getStartPosition(), null);
             ChessGame newGame = new ChessGame();
             newGame.setBoard(boardCopy);
             newGame.setTeamTurn(teamTurn);
-            if (newGame.isInCheck(teamTurn)) {
-                moves.remove(move);
+            if (!newGame.isInCheck(teamTurn)) {
+                validMoves.add(move);
             }
         }
-        return moves;
+        return validMoves;
     }
 
     /**
@@ -133,7 +138,7 @@ public class ChessGame {
                 ChessPosition attackPosition = new ChessPosition(row, col);
                 ChessPiece attacker = board.getPiece(attackPosition);
                 if (attacker != null && attacker.getTeamColor() != teamColor) {
-                    for (ChessMove move : validMoves(attackPosition)) {
+                    for (ChessMove move : attacker.pieceMoves(board, attackPosition)) {
                         if (move.getEndPosition().equals(kingPosition)) {
                             return true;
                         }
