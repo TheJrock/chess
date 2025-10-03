@@ -224,19 +224,48 @@ public class ChessPiece {
     }
 
     private void checkCastling(ChessBoard board, ChessPosition position, Collection<ChessMove> moves) {
-        ChessPiece leftRook = board.getPiece(new ChessPosition(position.getRow(), 1));
-        ChessPiece rightRook = board.getPiece(new ChessPosition(position.getRow(), 8));
+        int row = position.getRow();
+        int col = position.getColumn();
+        ChessGame.TeamColor teamColor = board.getPiece(position).getTeamColor();
         //Check left rook
+        ChessPiece leftRook = board.getPiece(new ChessPosition(row, 1));
         if (leftRook != null && leftRook.getPieceType() == PieceType.ROOK && !leftRook.hasMoved) {
-            if (board.getPiece(new ChessPosition(position.getRow(), position.getColumn()-1)) == null && board.getPiece(new ChessPosition(position.getRow(), position.getColumn()-2)) == null && board.getPiece(new ChessPosition(position.getRow(), position.getColumn()-3)) == null) {
-                moves.add(new ChessMove(position, new ChessPosition(position.getRow(), position.getColumn()-2), null));
+            if (board.getPiece(new ChessPosition(row, col-1)) == null &&
+                    board.getPiece(new ChessPosition(row, col-2)) == null &&
+                    board.getPiece(new ChessPosition(row, col-3)) == null) {
+                if (!castlingBlocked(board, position, new int[]{col-1, col-2}, teamColor)) {
+                    moves.add(new ChessMove(position, new ChessPosition(row, col - 2), null));
+                }
             }
         }
         //Check right rook
+        ChessPiece rightRook = board.getPiece(new ChessPosition(row, 8));
         if (rightRook != null && rightRook.getPieceType() == PieceType.ROOK && !rightRook.hasMoved) {
-            if (board.getPiece(new ChessPosition(position.getRow(), position.getColumn()+1)) == null && board.getPiece(new ChessPosition(position.getRow(), position.getColumn()+2)) == null) {
-                moves.add(new ChessMove(position, new ChessPosition(position.getRow(), position.getColumn()+2), null));
+            if (board.getPiece(new ChessPosition(row, col+1)) == null &&
+                    board.getPiece(new ChessPosition(row, col+2)) == null) {
+                if (!castlingBlocked(board, position, new int[]{col+1, col+2}, teamColor)) {
+                    moves.add(new ChessMove(position, new ChessPosition(row, col + 2), null));
+                }
             }
         }
+    }
+
+    private Boolean castlingBlocked(ChessBoard board, ChessPosition position, int[] columns, ChessGame.TeamColor teamColor) {
+        ChessGame simulatorOne = new ChessGame();
+        simulatorOne.setBoard(board);
+        if (simulatorOne.isInCheck(teamColor)) {
+            return true;
+        }
+        for (int col : columns) {
+            ChessBoard boardCopy = new ChessBoard(board);
+            boardCopy.addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(teamColor, PieceType.KING));
+            boardCopy.addPiece(position, null);
+            ChessGame simulatorTwo = new ChessGame();
+            simulatorTwo.setBoard(boardCopy);
+            if (simulatorTwo.isInCheck(teamColor)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
