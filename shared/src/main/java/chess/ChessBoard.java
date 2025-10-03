@@ -21,15 +21,8 @@ public class ChessBoard implements Cloneable {
     }
 
     @Override
-    public ChessBoard clone() {
-        ChessBoard clone = new ChessBoard();
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                ChessPiece piece = board[row][col];
-                clone.board[row][col] = (piece == null) ? null : new ChessPiece(piece);
-            }
-        }
-        return clone;
+    protected ChessBoard clone() {
+        return new ChessBoard(this);
     }
 
     @Override
@@ -48,7 +41,13 @@ public class ChessBoard implements Cloneable {
         board = new ChessPiece[8][8];
     }
     public ChessBoard(ChessBoard copy) {
-        board = Arrays.copyOf(copy.board, copy.board.length);
+        board = new ChessPiece[8][8];
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                ChessPiece piece = copy.board[row][col];
+                board[row][col] = (piece == null) ? null : new ChessPiece(piece);
+            }
+        }
     }
 
     /**
