@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-//import Math.abs;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -16,6 +15,7 @@ public class ChessGame {
     private ArrayList<ChessMove> gameHistory;
     private ChessBoard board;
     private TeamColor teamTurn;
+    private ChessPosition enPassantTarget;
 
     public ChessGame() {
         board = new ChessBoard();
@@ -118,19 +118,28 @@ public class ChessGame {
         if (!validMoves.contains(move)) {
             throw new InvalidMoveException();
         }
-        if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+        if (piece.getPieceType() == ChessPiece.PieceType.KING && Math.abs(move.getEndPosition().getColumn() - move.getStartPosition().getColumn()) == 2) {
             int diff = move.getStartPosition().getColumn() - move.getEndPosition().getColumn();
             int row = move.getStartPosition().getRow();
             if (diff == 2) {
                 ChessPiece rook = board.getPiece(new ChessPosition(row, 1));
                 board.addPiece(new ChessPosition(row, move.getEndPosition().getColumn()+1), rook);
                 board.addPiece(new ChessPosition(row, 1), null);
+                rook.hasMoved = true;
             }
             if (diff == -2) {
                 ChessPiece rook = board.getPiece(new ChessPosition(row, 8));
                 board.addPiece(new ChessPosition(row, move.getEndPosition().getColumn()-1), rook);
                 board.addPiece(new ChessPosition(row, 8), null);
+                rook.hasMoved = true;
             }
+        }
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN && Math.abs(move.getEndPosition().getRow() - move.getStartPosition().getRow()) == 2) {
+            int col = move.getStartPosition().getColumn();
+            int midRow = (move.getStartPosition().getRow() + move.getEndPosition().getRow())/2;
+            enPassantTarget = new ChessPosition(midRow,col);
+        } else {
+            enPassantTarget = null;
         }
         board.addPiece(move.getEndPosition(), piece);
         board.addPiece(move.getStartPosition(), null);
