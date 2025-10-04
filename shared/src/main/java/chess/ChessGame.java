@@ -15,7 +15,6 @@ public class ChessGame {
     private ArrayList<ChessMove> gameHistory;
     private ChessBoard board;
     private TeamColor teamTurn;
-    protected ChessPosition enPassantTarget;
 
     public ChessGame() {
         board = new ChessBoard();
@@ -133,13 +132,11 @@ public class ChessGame {
                 board.addPiece(new ChessPosition(row, 8), null);
                 rook.hasMoved = true;
             }
-        }
-        if (piece.getPieceType() == ChessPiece.PieceType.PAWN && Math.abs(move.getEndPosition().getRow() - move.getStartPosition().getRow()) == 2) {
-            int col = move.getStartPosition().getColumn();
-            int midRow = (move.getStartPosition().getRow() + move.getEndPosition().getRow())/2;
-            enPassantTarget = new ChessPosition(midRow,col);
-        } else {
-            enPassantTarget = null;
+        } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN &&
+                board.getPiece(move.getEndPosition()) == null &&
+                move.getStartPosition().getColumn() != move.getEndPosition().getColumn()) {
+            int direction = (piece.getTeamColor() == TeamColor.WHITE) ? 1 : -1;
+            board.addPiece(new ChessPosition(move.getEndPosition().getRow()-direction, move.getEndPosition().getColumn()), null);
         }
         board.addPiece(move.getEndPosition(), piece);
         board.addPiece(move.getStartPosition(), null);
