@@ -15,7 +15,7 @@ public class ChessGame {
     private ArrayList<ChessMove> gameHistory;
     private ChessBoard board;
     private TeamColor teamTurn;
-    private ChessPosition enPassantTarget;
+    protected ChessPosition enPassantTarget;
 
     public ChessGame() {
         board = new ChessBoard();
@@ -147,6 +147,7 @@ public class ChessGame {
             piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
             board.addPiece(move.getEndPosition(), piece);
         }
+        board.addMove(move);
         piece.hasMoved = true;
         teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }
