@@ -175,9 +175,8 @@ public class ChessPiece {
     private void pawnMoves(ChessBoard board, ChessPosition position, Collection<ChessMove> moves) {
 
         int direction = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
-        int startRow = (pieceColor == ChessGame.TeamColor.WHITE) ? 2 : 7;
+        int originalRow = (pieceColor == ChessGame.TeamColor.WHITE) ? 2 : 7;
         int promotionRow = (pieceColor == ChessGame.TeamColor.WHITE) ? 8 : 1;
-        int enPassantRow = (pieceColor == ChessGame.TeamColor.WHITE) ? 5 : 4;
 
         int row = position.getRow();
         int col = position.getColumn();
@@ -186,7 +185,7 @@ public class ChessPiece {
         if (isOnBoard(oneForward) && board.getPiece(oneForward) == null) {
             addPawnMove(position, oneForward, promotionRow, moves);
 
-            if (row == startRow) {
+            if (row == originalRow) {
                 ChessPosition twoForward = new ChessPosition(row + 2*direction, col);
                 if (isOnBoard(twoForward) && board.getPiece(twoForward) == null) {
                     moves.add(new ChessMove(position, twoForward, null));
@@ -201,8 +200,24 @@ public class ChessPiece {
                 ChessPiece targetPiece = board.getPiece(capturePosition);
                 if (targetPiece != null && targetPiece.getTeamColor() != pieceColor) {
                     addPawnMove(position, capturePosition, promotionRow, moves);
-//                } else if (row == enPassantRow && targetPiece == null) {
-//                    if ()
+                }
+            }
+        }
+        ChessMove lastMove = board.getLastMove();
+        if (lastMove != null) {
+            ChessPiece lastPiece = board.getPiece(lastMove.getEndPosition());
+            if (lastPiece != null && lastPiece.getPieceType() == PieceType.PAWN && lastPiece.getTeamColor() != pieceColor) {
+                int startRow = lastMove.getStartPosition().getRow();
+                int endRow = lastMove.getEndPosition().getRow();
+                if (Math.abs(startRow - endRow) == 2) {
+                    int enPassantRow = (startRow + endRow)/2;
+                    int enPassantCol = lastMove.getEndPosition().getColumn();
+                    ChessPosition enPassantTarget = new ChessPosition(enPassantRow, enPassantCol);
+                    if (Math.abs(position.getColumn() - enPassantCol) == 1 &&
+                            ((pieceColor == ChessGame.TeamColor.WHITE && position.getRow() == 5) ||
+                                    (pieceColor == ChessGame.TeamColor.BLACK && position.getRow() == 4))) {
+                        addPawnMove(position, enPassantTarget, promotionRow, moves);
+                    }
                 }
             }
         }
