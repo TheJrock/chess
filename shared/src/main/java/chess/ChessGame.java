@@ -118,6 +118,20 @@ public class ChessGame {
         if (!validMoves.contains(move)) {
             throw new InvalidMoveException();
         }
+        if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+            int diff = move.getStartPosition().getColumn() - move.getEndPosition().getColumn();
+            int row = move.getStartPosition().getRow();
+            if (diff == 2) {
+                ChessPiece rook = board.getPiece(new ChessPosition(row, 1));
+                board.addPiece(new ChessPosition(row, move.getEndPosition().getColumn()+1), rook);
+                board.addPiece(new ChessPosition(row, 1), null);
+            }
+            if (diff == -2) {
+                ChessPiece rook = board.getPiece(new ChessPosition(row, 8));
+                board.addPiece(new ChessPosition(row, move.getEndPosition().getColumn()-1), rook);
+                board.addPiece(new ChessPosition(row, 8), null);
+            }
+        }
         board.addPiece(move.getEndPosition(), piece);
         board.addPiece(move.getStartPosition(), null);
         if (move.getPromotionPiece() != null) {
