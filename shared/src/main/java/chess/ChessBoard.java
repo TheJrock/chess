@@ -10,33 +10,9 @@ import java.util.*;
  */
 public class ChessBoard implements Cloneable {
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessBoard that = (ChessBoard) o;
-        return Objects.deepEquals(board, that.board);
-    }
-
-    @Override
-    protected ChessBoard clone() {
-        return new ChessBoard(this);
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.deepHashCode(board);
-    }
-
-    public void setBoard(ChessPiece[][] board) {
-        for (int row = 0; row <= 7; row++) {
-            System.arraycopy(board[row], 1, this.board[row], 1, 7);
-        }
-    }
-
     private final ChessPiece[][] board;
     private List<ChessMove> moveHistory = new ArrayList<>();
+
     public ChessBoard() {
         board = new ChessPiece[8][8];
     }
@@ -49,6 +25,14 @@ public class ChessBoard implements Cloneable {
             }
         }
     }
+
+
+    public void setBoard(ChessPiece[][] board) {
+        for (int row = 0; row <= 7; row++) {
+            System.arraycopy(board[row], 1, this.board[row], 1, 7);
+        }
+    }
+
 
     /**
      * Adds a chess piece to the chessboard
@@ -115,8 +99,8 @@ public class ChessBoard implements Cloneable {
     }
 
     private void clearBoard() {
-        for (ChessPiece[] chessPieces : board) {
-            Arrays.fill(chessPieces, null);
+        for (ChessPiece[] row : board) {
+            Arrays.fill(row, null);
         }
     }
 
@@ -151,5 +135,21 @@ public class ChessBoard implements Cloneable {
         }
         stringRep.append("   a b c d e f g h");
         return stringRep.toString();
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(board, that.board);
+    }
+    @Override
+    protected ChessBoard clone() {
+        return new ChessBoard(this);
+    }
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(board);
     }
 }

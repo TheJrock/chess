@@ -51,20 +51,6 @@ public class ChessPiece {
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessPiece piece = (ChessPiece) o;
-        return pieceColor == piece.pieceColor && type == piece.type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(pieceColor, type);
-    }
-
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
@@ -75,19 +61,6 @@ public class ChessPiece {
         pieceColor = piece.pieceColor;
         type = piece.type;
         hasMoved = piece.hasMoved;
-    }
-
-    @Override
-    public String toString() {
-        String letterRep = switch (type) {
-            case ROOK -> "R";
-            case KNIGHT -> "N";
-            case BISHOP -> "B";
-            case QUEEN -> "Q";
-            case KING -> "K";
-            case PAWN -> "P";
-        };
-        return (pieceColor == ChessGame.TeamColor.WHITE ? letterRep : letterRep.toLowerCase());
     }
 
     /**
@@ -128,8 +101,7 @@ public class ChessPiece {
 
         if (type != PieceType.PAWN) { //Logic for all pieces except pawns
             int[][] directions = switch (type) {
-                case KING -> ALL_DIRECTIONS;
-                case QUEEN -> ALL_DIRECTIONS;
+                case KING,QUEEN -> ALL_DIRECTIONS;
                 case BISHOP -> DIAGONAL_DIRECTIONS;
                 case KNIGHT -> KNIGHT_DIRECTIONS;
                 case ROOK -> STRAIGHT_DIRECTIONS;
@@ -146,15 +118,14 @@ public class ChessPiece {
                     row += direction[0];
                     col += direction[1];
 
-                    if (row < 1 || row > 8 || col < 1 || col > 8) {
+                    ChessPosition newPosition = new ChessPosition(row, col);
+
+                    if (!isOnBoard(newPosition)) {
                         break;
                     }
 
-                    ChessPosition newPosition = new ChessPosition(row, col);
-                    ChessPiece targetPiece = board.getPiece(newPosition);
-
-                    if (targetPiece != null) {
-                        if (targetPiece.getTeamColor() != pieceColor) {
+                    if (board.getPiece(newPosition) != null) {
+                        if (board.getPiece(newPosition).getTeamColor() != pieceColor) {
                             moves.add(new ChessMove(myPosition, newPosition, null));
                         }
                         break;
@@ -184,23 +155,17 @@ public class ChessPiece {
         ChessPosition oneForward = new ChessPosition(row+direction, col);
         if (isOnBoard(oneForward) && board.getPiece(oneForward) == null) {
             addPawnMove(position, oneForward, promotionRow, moves);
-
-            if (row == originalRow) {
-                ChessPosition twoForward = new ChessPosition(row + 2*direction, col);
-                if (isOnBoard(twoForward) && board.getPiece(twoForward) == null) {
-                    moves.add(new ChessMove(position, twoForward, null));
-                }
+            ChessPosition twoForward = new ChessPosition(row + 2*direction, col);
+            if (row == originalRow && isOnBoard(twoForward) && board.getPiece(twoForward) == null) {
+                moves.add(new ChessMove(position, twoForward, null));
             }
         }
 
         int[] captureColumns = {col-1, col+1};
         for (int column : captureColumns) {
             ChessPosition capturePosition = new ChessPosition(row+direction, column);
-            if (isOnBoard(capturePosition)) {
-                ChessPiece targetPiece = board.getPiece(capturePosition);
-                if (targetPiece != null && targetPiece.getTeamColor() != pieceColor) {
-                    addPawnMove(position, capturePosition, promotionRow, moves);
-                }
+            if (isOnBoard(capturePosition) && board.getPiece(capturePosition) != null && board.getPiece(capturePosition).getTeamColor() != pieceColor) {
+                addPawnMove(position, capturePosition, promotionRow, moves);
             }
         }
         ChessMove lastMove = board.getLastMove();
@@ -282,5 +247,29 @@ public class ChessPiece {
             }
         }
         return false;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece piece = (ChessPiece) o;
+        return pieceColor == piece.pieceColor && type == piece.type;
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
+    }
+    @Override
+    public String toString() {
+        String letterRep = switch (type) {
+            case ROOK -> "R";
+            case KNIGHT -> "N";
+            case BISHOP -> "B";
+            case QUEEN -> "Q";
+            case KING -> "K";
+            case PAWN -> "P";
+        };
+        return (pieceColor == ChessGame.TeamColor.WHITE ? letterRep : letterRep.toLowerCase());
     }
 }
