@@ -1,9 +1,11 @@
 package server;
 
 import dataaccess.DataAccess;
+import dataaccess.MemoryDataAccess;
 import io.javalin.*;
+import io.javalin.http.*;
 import com.google.gson.Gson;
-import javax.naming.Context;
+//import javax.naming.Context;
 import java.util.Map;
 import datamodel.*;
 import org.w3c.dom.CDATASection;
@@ -15,13 +17,15 @@ public class Server {
     private final UserService userService;
 
     public Server() {
-        var dataAccess = new DataAccess();
+        var dataAccess = new MemoryDataAccess();
         userService = new UserService(dataAccess);
         server = Javalin.create(config -> config.staticFiles.add("web"));
 
-        server.delete("db", ctx -> result("{}"));
-        server.post("user", this::register);
-
+        server.delete("/db", ctx -> {
+            dataAccess.clear();
+            ctx.status(200).result("{}");
+    });
+        server.post("/user", this::register);
         // Register your endpoints and exception handlers here.
 
     }
