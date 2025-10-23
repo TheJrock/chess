@@ -13,8 +13,6 @@ import datamodel.*;
 import io.javalin.http.staticfiles.Location;
 import org.w3c.dom.CDATASection;
 import service.UserService;
-import io.javalin.json.JavalinJackson;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Server {
 
