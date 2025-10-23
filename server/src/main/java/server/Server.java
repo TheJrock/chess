@@ -10,8 +10,6 @@ import java.util.Map;
 import datamodel.*;
 import io.javalin.http.staticfiles.Location;
 import service.UserService;
-import io.javalin.json.JavalinJackson;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Server {
 
