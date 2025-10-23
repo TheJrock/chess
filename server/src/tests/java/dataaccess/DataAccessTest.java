@@ -1,31 +1,45 @@
 package dataaccess;
 
 import datamodel.UserData;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DataAccessTest {
 
+    private MemoryDataAccess dataAccess;
+    @BeforeEach
+    void setUp() {
+        dataAccess = new MemoryDataAccess();
+        dataAccess.clear();
+    }
+
     @Test
     void clear() {
-        DataAccess dataAccess = new MemoryDataAccess();
         dataAccess.createUser(new UserData("username", "email", "password"));
         dataAccess.clear();
-        assert dataAccess.getUser("username") == null;
+        assertNull(dataAccess.getUser("username"), "User data should be null");
     }
 
     @Test
     void createUser() {
-        DataAccess dataAccess = new MemoryDataAccess();
+        dataAccess.createUser(new UserData("username", "email", "password"));
+        UserData user = dataAccess.getUser("username");
+        assertNotNull(user, "user should not be null");
+        assertEquals("username", user.username());
+        assertEquals("email", user.email());
+        assertEquals("password", user.password());
+    }
+
+    @Test
+    void getUser() {
         dataAccess.createUser(new UserData("username", "email", "password"));
         UserData user = dataAccess.getUser("username");
         assert user.equals(new UserData("username", "email", "password"));
     }
 
     @Test
-    void getUser() {
-        DataAccess dataAccess = new MemoryDataAccess();
-        dataAccess.createUser(new UserData("username", "email", "password"));
-        UserData user = dataAccess.getUser("username");
-        assert user.equals(new UserData("username", "email", "password"));
+    void getNonExistingUser() {
+        assertNull(dataAccess.getUser("username"), "user should not be found");
     }
 }

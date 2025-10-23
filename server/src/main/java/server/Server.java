@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 //import javax.naming.Context;
 import java.util.Map;
 import datamodel.*;
+import io.javalin.http.staticfiles.Location;
 import org.w3c.dom.CDATASection;
 import service.UserService;
 
@@ -19,7 +20,7 @@ public class Server {
     public Server() {
         var dataAccess = new MemoryDataAccess();
         userService = new UserService(dataAccess);
-        server = Javalin.create(config -> config.staticFiles.add("web"));
+        server = Javalin.create(config -> config.staticFiles.add("/web", Location.CLASSPATH));
 
         server.delete("/db", ctx -> {
             dataAccess.clear();
