@@ -20,6 +20,7 @@ public class Server {
     private final UserService userService;
     private final ObjectMapper objectMapper;
 
+
     public Server() {
         dataAccess = new MemoryDataAccess();
         userService = new UserService(dataAccess);
