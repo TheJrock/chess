@@ -1,6 +1,8 @@
 package service;
 
 import dataaccess.DataAccess;
+import dataaccess.DataAccessException;
+import dataaccess.UserAlreadyExistsException;
 import datamodel.*;
 import java.util.UUID;
 
@@ -12,23 +14,24 @@ public class UserService {
     }
     public void clear() {dataAccess.clear();}
 
-    public AuthData register(UserData user) throws Exception {
+    public AuthData register(UserData user) throws UserAlreadyExistsException, IllegalArgumentException, DataAccessException {
         if (user.username() == null || user.username().isBlank()) {
-            throw new RuntimeException("Username is required");
-        }
-        if (user.email() == null || user.email().isBlank()) {
-            throw new RuntimeException("Email is required");
+            throw new IllegalArgumentException("Missing username");
         }
         if (user.password() == null || user.password().isBlank()) {
-            throw new RuntimeException("Password is required");
+            throw new IllegalArgumentException("Missing password");
+        }
+        if (user.email() == null || user.email().isBlank()) {
+            throw new IllegalArgumentException("Missing email");
         }
         if (dataAccess.getUser(user.username()) != null) {
-            throw new Exception("Username already exists");
+            throw new UserAlreadyExistsException("Username already exists");
         }
         dataAccess.createUser(user);
-        var authToken = generateAuthToken();
+        String authToken = generateAuthToken();
         return new AuthData(user.username(), authToken);
     }
+
     private String generateAuthToken() {
         return UUID.randomUUID().toString();
     }
