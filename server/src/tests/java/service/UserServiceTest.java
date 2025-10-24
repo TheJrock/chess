@@ -151,9 +151,9 @@ class UserServiceTest {
         var user = new UserData("john", "john@example.com", "password123");
         var authData = userService.register(user);
         var gameId = userService.create(authData.authToken(), "john's game");
-        List<GameData> expected = new ArrayList<>();
+        HashMap<String, GameData> expected = new HashMap<>();
         GameData game = new GameData(gameId, null, null, "john's game");
-        expected.add(game);
+        expected.put(gameId, game);
         var games = userService.list(authData.authToken());
         assertEquals(expected, games);
     }
@@ -162,9 +162,17 @@ class UserServiceTest {
     void listGamesEmpty() throws Exception {
         var user = new UserData("john", "john@example.com", "password123");
         var authData = userService.register(user);
-        List<GameData> expected = new ArrayList<>();
+        HashMap<String, GameData> expected = new HashMap<>();
         var games = userService.list(authData.authToken());
         assertEquals(expected, games);
+    }
+
+    @Test
+    void listGamesInvalidAuthToken() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        var authData = userService.register(user);
+        userService.logout(authData.authToken());
+        var ex = assertThrows(Exception.class, () -> userService.list(authData.authToken()));
     }
 
     @Test
