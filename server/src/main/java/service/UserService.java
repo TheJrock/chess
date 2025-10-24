@@ -1,8 +1,6 @@
 package service;
 
-import dataaccess.DataAccess;
-import dataaccess.DataAccessException;
-import dataaccess.UserAlreadyExistsException;
+import dataaccess.*;
 import datamodel.*;
 import jdk.jshell.spi.ExecutionControl;
 
@@ -34,15 +32,22 @@ public class UserService {
         return new AuthData(user.username(), generateAuthToken());
     }
 
-    public AuthData login(String username, String password) throws DataAccessException {
+    public AuthData login(String username, String password) throws UnauthorizedException {
         if (username == null || password == null || username.isBlank() || password.isBlank()) {
             throw new IllegalArgumentException("Username and password are required");
         }
         var user = dataAccess.getUser(username);
         if (user == null || !user.password().equals(password)) {
-            throw new IllegalArgumentException("Invalid username or password");
+            throw new UnauthorizedException("Invalid username or password");
         }
         return new AuthData(username, generateAuthToken());
+    }
+
+    public void logout(AuthData authData) throws UnauthorizedException {
+        if (authData == null || dataAccess.getUser(authData.username()) == null) {
+            throw new UnauthorizedException("Failed to logout nonexistent user");
+        }
+
     }
 
     private String generateAuthToken() {

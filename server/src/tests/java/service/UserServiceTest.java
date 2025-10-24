@@ -105,6 +105,23 @@ class UserServiceTest {
     }
 
     @Test
+    void logoutUser() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        userService.register(user);
+        var authData = userService.login("john", "password123");
+        userService.logout(authData);
+    }
+
+    @Test
+    void logoutInvalidUser() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        var authData = userService.register(user);
+        userService.logout(authData);
+        var ex = assertThrows(Exception.class, () -> userService.logout(authData));
+        assertEquals("Failed to logout nonexistent user", ex.getMessage());
+    }
+
+    @Test
     void clear() throws Exception {
         var user = new UserData("john", "john@example.com", "password123");
         userService.register(user);
