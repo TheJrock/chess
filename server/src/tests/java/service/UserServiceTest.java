@@ -46,7 +46,7 @@ class UserServiceTest {
 
     @Test
     void registerMissingEmail() {
-        var user = new UserData("john", null, "pasword123");
+        var user = new UserData("john", null, "password123");
         var ex = assertThrows(Exception.class, () -> userService.register(user));
         assertEquals("Email Required", ex.getMessage());
     }
@@ -109,15 +109,15 @@ class UserServiceTest {
         var user = new UserData("john", "john@example.com", "password123");
         userService.register(user);
         var authData = userService.login("john", "password123");
-        userService.logout(authData);
+        userService.logout(authData.authToken());
     }
 
     @Test
     void logoutInvalidUser() throws Exception {
         var user = new UserData("john", "john@example.com", "password123");
         var authData = userService.register(user);
-        userService.logout(authData);
-        var ex = assertThrows(Exception.class, () -> userService.logout(authData));
+        userService.logout(authData.authToken());
+        var ex = assertThrows(Exception.class, () -> userService.logout(authData.authToken()));
         assertEquals("Failed to logout nonexistent user", ex.getMessage());
     }
 

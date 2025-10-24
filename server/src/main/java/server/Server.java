@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.UnauthorizedException;
 import dataaccess.UserAlreadyExistsException;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -21,13 +22,12 @@ public class Server {
         service = new UserService(new MemoryDataAccess());
         serializer = new Gson();
 
-        server = Javalin.create(config -> config.staticFiles.add("web"))
-                .post("/user", this::register)
-                .post("/session", this::login)
-                .delete("/db", this::clearDatabase)
-                .exception(DataAccessException.class, (ex, ctx) -> {
-                    ctx.status(500).result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
-                });
+        server = Javalin.create(config -> config.staticFiles.add("web"));
+        server.post("/user", this::register);
+        server.post("/session", this::login);
+        server.delete("/session", this::logout);
+        server.delete("/db", this::clearDatabase);
+        server.exception(DataAccessException.class, (ex, ctx) -> ctx.status(500).result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage()))));
     }
 
     private void clearDatabase(Context ctx) {
@@ -66,6 +66,24 @@ public class Server {
             ctx.status(400).json(Map.of("message", "Error: " + ex.getMessage()));
         } catch (Exception ex) {
             ctx.status(500).json(Map.of("message", "Error: " + ex.getMessage()));
+        }
+    }
+
+    private void logout(Context ctx) {
+        try {
+            String authToken = ctx.header("Authorization");
+            service.logout(authToken);
+            ctx.status(200)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Logout successful")));
+        } catch (UnauthorizedException ex) {
+            ctx.status(401)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+        } catch (Exception ex) {
+            ctx.status(500)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
     }
 

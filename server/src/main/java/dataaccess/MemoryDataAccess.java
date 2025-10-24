@@ -1,15 +1,11 @@
 package dataaccess;
 
 import datamodel.*;
-
 import java.util.HashMap;
 
 public class MemoryDataAccess implements DataAccess {
     private final HashMap<String, UserData> users = new HashMap<>();
-    @Override
-    public void clear() {
-        users.clear();
-    }
+    private final HashMap<String, AuthData> authTokens = new HashMap<>();
 
     @Override
     public void createUser(UserData user) {
@@ -24,5 +20,25 @@ public class MemoryDataAccess implements DataAccess {
     @Override
     public void deleteUser(String username) {
         users.remove(username);
+    }
+
+    @Override
+    public void createAuth(AuthData authData) {
+        authTokens.put(authData.authToken(), authData);
+    }
+
+    @Override
+    public AuthData getAuth(String authToken) {
+        return authTokens.get(authToken);
+    }
+
+    @Override
+    public void deleteAuth(String authToken) {
+        authTokens.remove(authToken);
+    }
+
+    @Override
+    public void clear() {
+        users.clear();
     }
 }

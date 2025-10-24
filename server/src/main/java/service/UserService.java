@@ -2,9 +2,6 @@ package service;
 
 import dataaccess.*;
 import datamodel.*;
-import jdk.jshell.spi.ExecutionControl;
-
-import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
@@ -28,8 +25,10 @@ public class UserService {
         if (dataAccess.getUser(user.username()) != null) {
             throw new UserAlreadyExistsException("Username Unavailable");
         }
+        AuthData authData = new AuthData(user.username(), generateAuthToken());
         dataAccess.createUser(user);
-        return new AuthData(user.username(), generateAuthToken());
+        dataAccess.createAuth(authData);
+        return authData;
     }
 
     public AuthData login(String username, String password) throws UnauthorizedException {
@@ -40,14 +39,16 @@ public class UserService {
         if (user == null || !user.password().equals(password)) {
             throw new UnauthorizedException("Invalid username or password");
         }
-        return new AuthData(username, generateAuthToken());
+        AuthData authData = new AuthData(user.username(), generateAuthToken());
+        dataAccess.createAuth(authData);
+        return authData;
     }
 
-    public void logout(AuthData authData) throws UnauthorizedException {
-        if (authData == null || dataAccess.getUser(authData.username()) == null) {
+    public void logout(String authToken) throws UnauthorizedException {
+        if (authToken == null || authToken.isEmpty() || dataAccess.getAuth(authToken) == null) {
             throw new UnauthorizedException("Failed to logout nonexistent user");
         }
-
+        dataAccess.deleteAuth(authToken);
     }
 
     private String generateAuthToken() {
