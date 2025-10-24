@@ -2,7 +2,6 @@ package dataaccess;
 
 import datamodel.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MemoryDataAccess implements DataAccess {
@@ -47,7 +46,14 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     @Override
+    public HashMap<String, GameData> getGames() {
+        return new HashMap<>(games);
+    }
+
+    @Override
     public void clear() {
         users.clear();
+        authTokens.clear();
+        games.clear();
     }
 }

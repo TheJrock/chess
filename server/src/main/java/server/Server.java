@@ -7,10 +7,14 @@ import dataaccess.UserAlreadyExistsException;
 import datamodel.GameData;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import org.jetbrains.annotations.NotNull;
 import service.UserService;
 import dataaccess.MemoryDataAccess;
 import datamodel.UserData;
 import datamodel.AuthData;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Server {
@@ -27,6 +31,7 @@ public class Server {
         server.post("/session", this::login);
         server.delete("/session", this::logout);
         server.post("/game", this::create);
+        server.get("/game", this::list);
         server.delete("/db", this::clearDatabase);
         server.exception(DataAccessException.class, (ex, ctx) -> ctx.status(500).result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage()))));
     }
@@ -113,6 +118,26 @@ public class Server {
             ctx.status(400)
                     .contentType("application/json")
                     .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+        } catch (UnauthorizedException ex) {
+            ctx.status(401)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+        } catch (Exception ex) {
+            ctx.status(500)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+        }
+    }
+
+    private void list(Context ctx) {
+        try {
+            String authToken = ctx.header("Authorization");
+            var games = service.list(authToken);
+            var gameList = new ArrayList<>(games.values());
+            var response = Map.of("games", gameList);
+            ctx.status(200)
+                    .contentType("application/json")
+                    .result(serializer.toJson(response));
         } catch (UnauthorizedException ex) {
             ctx.status(401)
                     .contentType("application/json")

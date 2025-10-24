@@ -3,6 +3,7 @@ package service;
 import dataaccess.*;
 import datamodel.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,14 +61,21 @@ public class UserService {
         if (authToken == null || authToken.isEmpty() || dataAccess.getAuth(authToken) == null) {
             throw new UnauthorizedException("Failed to authorize user");
         }
-        return dataAccess.createGame(new GameData(generateAuthToken(), null, null, gameName));
+        return dataAccess.createGame(new GameData(generateGameId(), null, null, gameName));
     }
 
-    public List<GameData> list(String authToken) throws UnauthorizedException {
-        return null;
+    public HashMap<String, GameData> list(String authToken) throws UnauthorizedException {
+        if (authToken == null || authToken.isEmpty() || dataAccess.getAuth(authToken) == null) {
+            throw new UnauthorizedException("Failed to authorize user");
+        }
+        return dataAccess.getGames();
     }
 
     private String generateAuthToken() {
+        return UUID.randomUUID().toString();
+    }
+
+    private String generateGameId() {
         return UUID.randomUUID().toString();
     }
 }
