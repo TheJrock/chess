@@ -2,9 +2,11 @@ package service;
 
 import dataaccess.*;
 import datamodel.*;
+import io.javalin.http.BadRequestResponse;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
@@ -69,6 +71,24 @@ public class UserService {
             throw new UnauthorizedException("Failed to authorize user");
         }
         return dataAccess.getGames();
+    }
+
+    public void join(String authToken, String team, String gameId) throws UnauthorizedException, DataAccessException {
+        if (authToken == null || authToken.isEmpty() || dataAccess.getAuth(authToken) == null) {
+            throw new UnauthorizedException("Failed to authorize user");
+        }
+        if (gameId == null || gameId.isBlank() || dataAccess.getGame(gameId) == null) {
+            throw new DataAccessException("Game not found");
+        }
+        GameData oldGame = dataAccess.getGame(gameId);
+        String username = dataAccess.getAuth(authToken).username();
+        if (team.equals("WHITE")) {
+            GameData newGame = new GameData(oldGame.gameId(), username, oldGame.blackUsername(), oldGame.gameName());
+        } else if (team.equals("BLACK")) {
+            GameData newGame = new GameData(oldGame.gameId(), oldGame.whiteUsername(), username, oldGame.gameName());
+        } else {
+            throw new DataAccessException("Unsupported team");
+        }
     }
 
     private String generateAuthToken() {

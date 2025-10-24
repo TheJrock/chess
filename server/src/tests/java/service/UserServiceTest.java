@@ -137,6 +137,7 @@ class UserServiceTest {
         var authData = userService.register(user);
         userService.logout(authData.authToken());
         var ex = assertThrows(Exception.class, () -> userService.create(authData.authToken(), "john's game"));
+        assertEquals("Failed to authorize user", ex.getMessage());
     }
 
     @Test
@@ -144,6 +145,7 @@ class UserServiceTest {
         var user = new UserData("john", "john@example.com", "password123");
         var authData = userService.register(user);
         var ex = assertThrows(Exception.class, () -> userService.create(authData.authToken(), ""));
+        assertEquals("Game Name Required", ex.getMessage());
     }
 
     @Test
@@ -173,6 +175,82 @@ class UserServiceTest {
         var authData = userService.register(user);
         userService.logout(authData.authToken());
         var ex = assertThrows(Exception.class, () -> userService.list(authData.authToken()));
+        assertEquals("Failed to authorize user", ex.getMessage());
+    }
+
+    @Test
+    void joinGameAsWhite() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        var authData = userService.register(user);
+        var gameId = userService.create(authData.authToken(), "john's game");
+        userService.join(authData.authToken(), "WHITE", gameId);
+        assertEquals("john", dataAccess.getGame(gameId).whiteUsername());
+    }
+
+    @Test
+    void joinGameAsBlack() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        var authData = userService.register(user);
+        var gameId = userService.create(authData.authToken(), "john's game");
+        userService.join(authData.authToken(), "BLACK", gameId);
+        assertEquals("john", dataAccess.getGame(gameId).blackUsername());
+    }
+
+    @Test
+    void joinGameTwoPlayers() throws Exception {
+        var user1 = new UserData("john", "john@example.com", "password123");
+        var user2 = new UserData("Johnny", "Johnny@example.com", "otherPassword123");
+        var authData1 = userService.register(user1);
+        var authData2 = userService.register(user2);
+        var gameId = userService.create(authData1.authToken(), "john's game");
+        userService.join(authData1.authToken(), "WHITE", gameId);
+        userService.join(authData2.authToken(), "BLACK", gameId);
+        assertEquals("john", dataAccess.getGame(gameId).whiteUsername());
+        assertEquals("Johnny", dataAccess.getGame(gameId).blackUsername());
+    }
+
+    @Test
+    void joinGameInvalidAuthToken() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        var authData = userService.register(user);
+        var gameId = userService.create(authData.authToken(), "john's game");
+        userService.logout(authData.authToken());
+        var ex = assertThrows(Exception.class, () -> userService.join(authData.authToken(), "WHITE", gameId));
+        assertEquals("Failed to authorize user", ex.getMessage());
+    }
+
+    @Test
+    void joinGameInvalidId() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        var authData = userService.register(user);
+        var gameId = userService.create(authData.authToken(), "john's game");
+        var wrongGameId = gameId + "WRONG";
+        var ex = assertThrows(Exception.class, () -> userService.join(authData.authToken(), "WHITE", wrongGameId));
+        assertEquals("Game not found", ex.getMessage());
+    }
+
+    @Test
+    void joinGameWhiteTaken() throws Exception {
+        var user1 = new UserData("john", "john@example.com", "password123");
+        var user2 = new UserData("Johnny", "Johnny@example.com", "otherPassword123");
+        var authData1 = userService.register(user1);
+        var authData2 = userService.register(user2);
+        var gameId = userService.create(authData1.authToken(), "john's game");
+        userService.join(authData1.authToken(), "WHITE", gameId);
+        var ex = assertThrows(Exception.class, () -> userService.join(authData2.authToken(), "WHITE", gameId));
+        assertEquals("Spot already taken", ex.getMessage());
+    }
+
+    @Test
+    void joinGameBlackTaken() throws Exception {
+        var user1 = new UserData("john", "john@example.com", "password123");
+        var user2 = new UserData("Johnny", "Johnny@example.com", "otherPassword123");
+        var authData1 = userService.register(user1);
+        var authData2 = userService.register(user2);
+        var gameId = userService.create(authData1.authToken(), "john's game");
+        userService.join(authData1.authToken(), "BLACK", gameId);
+        var ex = assertThrows(Exception.class, () -> userService.join(authData2.authToken(), "BLACK", gameId));
+        assertEquals("Spot already taken", ex.getMessage());
     }
 
     @Test
