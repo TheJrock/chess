@@ -17,11 +17,10 @@ public class Server {
 
     private final Javalin server;
     private final UserService service;
-    private final Gson serializer;
+    private static final Gson serializer = new Gson();
 
     public Server() {
         service = new UserService(new MemoryDataAccess());
-        serializer = new Gson();
 
         server = Javalin.create(config -> config.staticFiles.add("web"));
         server.post("/user", this::register);
@@ -46,14 +45,21 @@ public class Server {
             String reqJson = ctx.body();
             UserData user = serializer.fromJson(reqJson, UserData.class);
             AuthData authData = service.register(user);
-            ctx.contentType("application/json");
-            ctx.status(200).result(serializer.toJson(authData));
+            ctx.status(200)
+                    .contentType("application/json")
+                    .result(serializer.toJson(authData));
         } catch (IllegalArgumentException ex) {
-            ctx.status(400).json(Map.of("message", "Error: " + ex.getMessage()));
+            ctx.status(400)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (UserAlreadyExistsException ex) {
-            ctx.status(403).json(Map.of("message", "Error: already taken"));
+            ctx.status(403)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (Exception ex) {
-            ctx.status(500).json(Map.of("message", "Error: " + ex.getMessage()));
+            ctx.status(500)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
     }
 
@@ -62,12 +68,17 @@ public class Server {
             String reqJson = ctx.body();
             UserData user = serializer.fromJson(reqJson, UserData.class);
             AuthData authData = service.login(user.username(), user.password());
-            ctx.contentType("application/json");
-            ctx.status(200).result(serializer.toJson(authData));
+            ctx.status(200)
+                    .contentType("application/json")
+                    .result(serializer.toJson(authData));
         } catch (IllegalArgumentException ex) {
-            ctx.status(400).json(Map.of("message", "Error: " + ex.getMessage()));
+            ctx.status(400)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (Exception ex) {
-            ctx.status(500).json(Map.of("message", "Error: " + ex.getMessage()));
+            ctx.status(500)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
     }
 
@@ -95,14 +106,21 @@ public class Server {
             GameData gameData = serializer.fromJson(reqJson, GameData.class);
             String authToken = ctx.header("Authorization");
             String gameId = service.create(authToken, gameData.gameName());
-            ctx.contentType("application/json");
-            ctx.status(200).json(Map.of("gameID", gameId));
+            ctx.status(200)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("gameID", gameId)));
         } catch (IllegalArgumentException ex) {
-            ctx.status(400).json(Map.of("message", "Error: " + ex.getMessage()));
+            ctx.status(400)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (UnauthorizedException ex) {
-            ctx.status(401).json(Map.of("message", "Error: " + ex.getMessage()));
+            ctx.status(401)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (Exception ex) {
-            ctx.status(500).json(Map.of("message", "Error: " + ex.getMessage()));
+            ctx.status(500)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
     }
 
