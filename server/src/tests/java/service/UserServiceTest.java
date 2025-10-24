@@ -3,9 +3,11 @@ package service;
 import dataaccess.DataAccess;
 import org.junit.jupiter.api.Test;
 import dataaccess.MemoryDataAccess;
-import datamodel.UserData;
+import datamodel.*;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.*;
 
 class UserServiceTest {
 
@@ -119,6 +121,50 @@ class UserServiceTest {
         userService.logout(authData.authToken());
         var ex = assertThrows(Exception.class, () -> userService.logout(authData.authToken()));
         assertEquals("Failed to logout nonexistent user", ex.getMessage());
+    }
+
+    @Test
+    void createGame() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        var authData = userService.register(user);
+        var gameId = userService.create(authData.authToken(), "john's game");
+        assertNotNull(gameId);
+    }
+
+    @Test
+    void createGameInvalidAuthToken() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        var authData = userService.register(user);
+        userService.logout(authData.authToken());
+        var ex = assertThrows(Exception.class, () -> userService.create(authData.authToken(), "john's game"));
+    }
+
+    @Test
+    void createGameInvalidName() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        var authData = userService.register(user);
+        var ex = assertThrows(Exception.class, () -> userService.create(authData.authToken(), ""));
+    }
+
+    @Test
+    void listGames() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        var authData = userService.register(user);
+        var gameId = userService.create(authData.authToken(), "john's game");
+        List<GameData> expected = new ArrayList<>();
+        GameData game = new GameData(gameId, null, null, "john's game");
+        expected.add(game);
+        var games = userService.list(authData.authToken());
+        assertEquals(expected, games);
+    }
+
+    @Test
+    void listGamesEmpty() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        var authData = userService.register(user);
+        List<GameData> expected = new ArrayList<>();
+        var games = userService.list(authData.authToken());
+        assertEquals(expected, games);
     }
 
     @Test

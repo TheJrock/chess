@@ -2,6 +2,8 @@ package service;
 
 import dataaccess.*;
 import datamodel.*;
+
+import java.util.List;
 import java.util.UUID;
 
 public class UserService {
@@ -49,6 +51,14 @@ public class UserService {
             throw new UnauthorizedException("Failed to logout nonexistent user");
         }
         dataAccess.deleteAuth(authToken);
+    }
+
+    public String create(String authToken, String gameName) throws UnauthorizedException {
+        return null;
+    }
+
+    public List<GameData> list(String authToken) throws UnauthorizedException {
+        return null;
     }
 
     private String generateAuthToken() {
