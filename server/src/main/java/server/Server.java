@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedException;
 import dataaccess.UserAlreadyExistsException;
+import datamodel.GameData;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import service.UserService;
@@ -26,6 +27,7 @@ public class Server {
         server.post("/user", this::register);
         server.post("/session", this::login);
         server.delete("/session", this::logout);
+        server.post("/game", this::create);
         server.delete("/db", this::clearDatabase);
         server.exception(DataAccessException.class, (ex, ctx) -> ctx.status(500).result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage()))));
     }
@@ -84,6 +86,23 @@ public class Server {
             ctx.status(500)
                     .contentType("application/json")
                     .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+        }
+    }
+
+    private void create(Context ctx) {
+        try {
+            String reqJson = ctx.body();
+            GameData gameData = serializer.fromJson(reqJson, GameData.class);
+            String authToken = ctx.header("Authorization");
+            String gameId = service.create(authToken, gameData.gameName());
+            ctx.contentType("application/json");
+            ctx.status(200).json(Map.of("gameID", gameId));
+        } catch (IllegalArgumentException ex) {
+            ctx.status(400).json(Map.of("message", "Error: " + ex.getMessage()));
+        } catch (UnauthorizedException ex) {
+            ctx.status(401).json(Map.of("message", "Error: " + ex.getMessage()));
+        } catch (Exception ex) {
+            ctx.status(500).json(Map.of("message", "Error: " + ex.getMessage()));
         }
     }
 

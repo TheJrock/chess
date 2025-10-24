@@ -54,7 +54,13 @@ public class UserService {
     }
 
     public String create(String authToken, String gameName) throws UnauthorizedException {
-        return null;
+        if (gameName == null || gameName.isBlank()) {
+            throw new IllegalArgumentException("Game Name Required");
+        }
+        if (authToken == null || authToken.isEmpty() || dataAccess.getAuth(authToken) == null) {
+            throw new UnauthorizedException("Failed to authorize user");
+        }
+        return dataAccess.createGame(new GameData(generateAuthToken(), null, null, gameName));
     }
 
     public List<GameData> list(String authToken) throws UnauthorizedException {

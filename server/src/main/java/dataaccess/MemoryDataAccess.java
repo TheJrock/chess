@@ -1,11 +1,14 @@
 package dataaccess;
 
 import datamodel.*;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MemoryDataAccess implements DataAccess {
     private final HashMap<String, UserData> users = new HashMap<>();
     private final HashMap<String, AuthData> authTokens = new HashMap<>();
+    private final HashMap<String, GameData> games = new HashMap<>();
 
     @Override
     public void createUser(UserData user) {
@@ -35,6 +38,12 @@ public class MemoryDataAccess implements DataAccess {
     @Override
     public void deleteAuth(String authToken) {
         authTokens.remove(authToken);
+    }
+
+    @Override
+    public String createGame(GameData gameData) {
+        games.put(gameData.gameId(), gameData);
+        return gameData.gameId();
     }
 
     @Override
