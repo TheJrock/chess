@@ -1,8 +1,6 @@
 package service;
 
 import dataaccess.DataAccess;
-import datamodel.AuthData;
-import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.Test;
 import dataaccess.MemoryDataAccess;
 import datamodel.UserData;
@@ -33,31 +31,61 @@ class UserServiceTest {
     @Test
     void registerDuplicateUser() throws Exception {
         var user1 = new UserData("john", "john@example.com", "password123");
-        var user2 = new UserData("john", "different@example.com", "differentPassword123");
+        var user2 = new UserData("john", "johnny@example.com", "differentPassword123");
         userService.register(user1);
         var ex = assertThrows(Exception.class, () -> userService.register(user2));
-        assertTrue(ex.getMessage().toLowerCase().contains("username"), "Error message should mention username");
+        assertEquals("Username Unavailable", ex.getMessage());
     }
 
     @Test
     void registerMissingPassword() {
         var user = new UserData("john", "john@example.com", null);
         var ex = assertThrows(Exception.class, () -> userService.register(user));
-        assertTrue(ex.getMessage().toLowerCase().contains("password"), "Error message should mention password");
+        assertEquals("Password Required", ex.getMessage());
     }
 
     @Test
     void registerMissingEmail() {
         var user = new UserData("john", null, "pasword123");
         var ex = assertThrows(Exception.class, () -> userService.register(user));
-        assertTrue(ex.getMessage().toLowerCase().contains("email"), "Error message should mention email");
+        assertEquals("Email Required", ex.getMessage());
     }
 
     @Test
     void registerMissingUsername() {
         var user = new UserData(null, "john@example.com", "password123");
         var ex = assertThrows(Exception.class, () -> userService.register(user));
-        assertTrue(ex.getMessage().toLowerCase().contains("username"), "Error message should mention username");
+        assertEquals("Username Required", ex.getMessage());
+    }
+
+    @Test
+    void loginUser() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        userService.register(user);
+        var authData = userService.login("john", "password123");
+        assertNotNull(authData, "authData should not be null");
+    }
+
+    @Test
+    void loginInvalidUser() {
+        var ex = assertThrows(Exception.class, () -> userService.login("john", "password123"));
+        assertEquals("Invalid Username or Password", ex.getMessage());
+    }
+
+    @Test
+    void loginCorrectUsernameWrongPassword() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        userService.register(user);
+        var ex = assertThrows(Exception.class, () -> userService.login("john", "wrongPassword123"));
+        assertEquals("Invalid Username or Password", ex.getMessage());
+    }
+
+    @Test
+    void loginCorrectPasswordWrongUsername() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        userService.register(user);
+        var ex = assertThrows(Exception.class, () -> userService.login("johnny", "password123"));
+        assertEquals("Invalid Username or Password", ex.getMessage());
     }
 
     @Test
