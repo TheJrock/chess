@@ -1,6 +1,6 @@
 package dataaccess;
 
-import datamodel.UserData;
+import datamodel.*;
 
 import java.util.HashMap;
 
@@ -19,5 +19,10 @@ public class MemoryDataAccess implements DataAccess {
     @Override
     public UserData getUser(String username) {
         return users.get(username);
+    }
+
+    @Override
+    public void deleteUser(String username) {
+        users.remove(username);
     }
 }

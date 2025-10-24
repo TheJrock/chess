@@ -6,5 +6,6 @@ public interface DataAccess {
     void clear();
     void createUser(UserData user);
     UserData getUser(String username);
+    void deleteUser(String username);
 
 }
