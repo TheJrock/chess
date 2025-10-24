@@ -6,6 +6,7 @@ import dataaccess.UserAlreadyExistsException;
 import datamodel.*;
 import jdk.jshell.spi.ExecutionControl;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
@@ -30,12 +31,18 @@ public class UserService {
             throw new UserAlreadyExistsException("Username Unavailable");
         }
         dataAccess.createUser(user);
-        String authToken = generateAuthToken();
-        return new AuthData(user.username(), authToken);
+        return new AuthData(user.username(), generateAuthToken());
     }
 
-    public AuthData login(String username, String password) {
-        return null;
+    public AuthData login(String username, String password) throws DataAccessException {
+        if (username == null || password == null || username.isBlank() || password.isBlank()) {
+            throw new IllegalArgumentException("Username and password are required");
+        }
+        var user = dataAccess.getUser(username);
+        if (user == null || !user.password().equals(password)) {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+        return new AuthData(username, generateAuthToken());
     }
 
     private String generateAuthToken() {

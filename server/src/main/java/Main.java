@@ -1,7 +1,6 @@
 import dataaccess.DataAccess;
 import dataaccess.MemoryDataAccess;
 import server.Server;
-import service.UserService;
 
 public class Main {
     public static void main(String[] args) {
@@ -16,7 +15,6 @@ public class Main {
                 dataAccess = new MemoryDataAccess();
             }
 
-            var service = new UserService(dataAccess);
             var server = new Server();
             server.run(port);
             port = server.port();

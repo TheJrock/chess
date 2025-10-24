@@ -69,7 +69,7 @@ class UserServiceTest {
     @Test
     void loginInvalidUser() {
         var ex = assertThrows(Exception.class, () -> userService.login("john", "password123"));
-        assertEquals("Invalid Username or Password", ex.getMessage());
+        assertEquals("Invalid username or password", ex.getMessage());
     }
 
     @Test
@@ -77,7 +77,7 @@ class UserServiceTest {
         var user = new UserData("john", "john@example.com", "password123");
         userService.register(user);
         var ex = assertThrows(Exception.class, () -> userService.login("john", "wrongPassword123"));
-        assertEquals("Invalid Username or Password", ex.getMessage());
+        assertEquals("Invalid username or password", ex.getMessage());
     }
 
     @Test
@@ -85,7 +85,23 @@ class UserServiceTest {
         var user = new UserData("john", "john@example.com", "password123");
         userService.register(user);
         var ex = assertThrows(Exception.class, () -> userService.login("johnny", "password123"));
-        assertEquals("Invalid Username or Password", ex.getMessage());
+        assertEquals("Invalid username or password", ex.getMessage());
+    }
+
+    @Test
+    void loginWithoutPassword() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        userService.register(user);
+        var ex = assertThrows(Exception.class, () -> userService.login("johnny", ""));
+        assertEquals("Username and password are required", ex.getMessage());
+    }
+
+    @Test
+    void loginWithoutUsername() throws Exception {
+        var user = new UserData("john", "john@example.com", "password123");
+        userService.register(user);
+        var ex = assertThrows(Exception.class, () -> userService.login("", "password123"));
+        assertEquals("Username and password are required", ex.getMessage());
     }
 
     @Test

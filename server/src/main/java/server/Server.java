@@ -23,13 +23,11 @@ public class Server {
 
         server = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", this::register)
+                .post("/session", this::login)
                 .delete("/db", this::clearDatabase)
                 .exception(DataAccessException.class, (ex, ctx) -> {
                     ctx.status(500).result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
                 });
-
-        server.delete("db", this::clearDatabase);
-        server.post("user", this::register);
     }
 
     private void clearDatabase(Context ctx) {
@@ -46,12 +44,26 @@ public class Server {
             String reqJson = ctx.body();
             UserData user = serializer.fromJson(reqJson, UserData.class);
             AuthData authData = service.register(user);
-            ctx.result(serializer.toJson(authData));
-
+            ctx.contentType("application/json");
+            ctx.status(200).result(serializer.toJson(authData));
         } catch (IllegalArgumentException ex) {
             ctx.status(400).json(Map.of("message", "Error: " + ex.getMessage()));
         } catch (UserAlreadyExistsException ex) {
             ctx.status(403).json(Map.of("message", "Error: already taken"));
+        } catch (Exception ex) {
+            ctx.status(500).json(Map.of("message", "Error: " + ex.getMessage()));
+        }
+    }
+
+    private void login(Context ctx) {
+        try {
+            String reqJson = ctx.body();
+            UserData user = serializer.fromJson(reqJson, UserData.class);
+            AuthData authData = service.login(user.username(), user.password());
+            ctx.contentType("application/json");
+            ctx.status(200).result(serializer.toJson(authData));
+        } catch (IllegalArgumentException ex) {
+            ctx.status(400).json(Map.of("message", "Error: " + ex.getMessage()));
         } catch (Exception ex) {
             ctx.status(500).json(Map.of("message", "Error: " + ex.getMessage()));
         }
