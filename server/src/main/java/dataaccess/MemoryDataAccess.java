@@ -20,11 +20,6 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     @Override
-    public void deleteUser(String username) {
-        users.remove(username);
-    }
-
-    @Override
     public void createAuth(AuthData authData) {
         authTokens.put(authData.authToken(), authData);
     }
