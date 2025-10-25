@@ -80,6 +80,10 @@ public class Server {
             ctx.status(400)
                     .contentType("application/json")
                     .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+        } catch (UnauthorizedException ex) {
+            ctx.status(401)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (Exception ex) {
             ctx.status(500)
                     .contentType("application/json")
@@ -110,7 +114,7 @@ public class Server {
             String reqJson = ctx.body();
             GameData gameData = serializer.fromJson(reqJson, GameData.class);
             String authToken = ctx.header("Authorization");
-            String gameID = service.create(authToken, gameData.gameName());
+            int gameID = service.create(authToken, gameData.gameName());
             ctx.status(200)
                     .contentType("application/json")
                     .result(serializer.toJson(Map.of("gameID", gameID)));
@@ -154,13 +158,21 @@ public class Server {
             String reqJson = ctx.body();
             JoinRequest request = serializer.fromJson(reqJson, JoinRequest.class);
             String authToken = ctx.header("Authorization");
-            String gameID = request.gameID();
+            int gameID = request.gameID();
             service.join(authToken, request.playerColor(), gameID);
             ctx.status(200)
                     .contentType("application/json")
                     .result(serializer.toJson(Map.of("message", "Join successful")));
         } catch (IllegalArgumentException ex) {
             ctx.status(400)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+        } catch (UnauthorizedException ex) {
+            ctx.status(401)
+                    .contentType("application/json")
+                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+        } catch (DataAccessException ex) {
+            ctx.status(403)
                     .contentType("application/json")
                     .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (Exception ex) {

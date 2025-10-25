@@ -1,4 +1,4 @@
 package datamodel;
 
-public record GameData(String gameID, String whiteUsername, String blackUsername, String gameName) {
+public record GameData(int gameID, String whiteUsername, String blackUsername, String gameName) {
 }

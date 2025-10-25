@@ -54,28 +54,31 @@ public class UserService {
         dataAccess.deleteAuth(authToken);
     }
 
-    public String create(String authToken, String gameName) throws UnauthorizedException {
+    public int create(String authToken, String gameName) throws UnauthorizedException {
         if (gameName == null || gameName.isBlank()) {
             throw new IllegalArgumentException("Game Name Required");
         }
         if (authToken == null || authToken.isEmpty() || dataAccess.getAuth(authToken) == null) {
             throw new UnauthorizedException("Failed to authorize user");
         }
-        return dataAccess.createGame(new GameData(generateGameID(), null, null, gameName));
+        return dataAccess.createGame(new GameData(0, null, null, gameName));
     }
 
-    public HashMap<String, GameData> list(String authToken) throws UnauthorizedException {
+    public HashMap<Integer, GameData> list(String authToken) throws UnauthorizedException {
         if (authToken == null || authToken.isEmpty() || dataAccess.getAuth(authToken) == null) {
             throw new UnauthorizedException("Failed to authorize user");
         }
         return dataAccess.getGames();
     }
 
-    public void join(String authToken, String team, String gameID) throws UnauthorizedException, DataAccessException {
+    public void join(String authToken, String team, int gameID) throws UnauthorizedException, DataAccessException {
         if (authToken == null || authToken.isEmpty() || dataAccess.getAuth(authToken) == null) {
             throw new UnauthorizedException("Failed to authorize user");
         }
-        if (gameID == null || gameID.isBlank() || dataAccess.getGame(gameID) == null) {
+        if (gameID < 1) {
+            throw new IllegalArgumentException("Missing or invalid game ID");
+        }
+        if (dataAccess.getGame(gameID) == null) {
             throw new DataAccessException("Game not found");
         }
         GameData oldGame = dataAccess.getGame(gameID);
@@ -89,7 +92,7 @@ public class UserService {
         String white = oldGame.whiteUsername();
         String black = oldGame.blackUsername();
         if (team == null || team.isBlank()) {
-            throw new DataAccessException("Unsupported team");
+            throw new IllegalArgumentException("Unsupported team");
         }
         switch (team.toUpperCase()) {
             case "WHITE" -> {
@@ -103,16 +106,12 @@ public class UserService {
             case "WHITE/BLACK" -> {
                 // Join as observer
             }
-            default -> throw new DataAccessException("Unsupported team");
+            default -> throw new IllegalArgumentException("Unsupported team");
         }
         return new GameData(oldGame.gameID(), white, black, oldGame.gameName());
     }
 
     private String generateAuthToken() {
-        return UUID.randomUUID().toString();
-    }
-
-    private String generateGameID() {
         return UUID.randomUUID().toString();
     }
 }

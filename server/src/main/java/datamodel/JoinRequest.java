@@ -1,4 +1,4 @@
 package datamodel;
 
-public record JoinRequest(String playerColor, String gameID) {
+public record JoinRequest(String playerColor, int gameID) {
 }

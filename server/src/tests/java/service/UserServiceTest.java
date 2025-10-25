@@ -153,7 +153,7 @@ class UserServiceTest {
         var user = new UserData("john", "john@example.com", "password123");
         var authData = userService.register(user);
         var gameID = userService.create(authData.authToken(), "john's game");
-        HashMap<String, GameData> expected = new HashMap<>();
+        HashMap<Integer, GameData> expected = new HashMap<>();
         GameData game = new GameData(gameID, null, null, "john's game");
         expected.put(gameID, game);
         var games = userService.list(authData.authToken());
@@ -164,7 +164,7 @@ class UserServiceTest {
     void listGamesEmpty() throws Exception {
         var user = new UserData("john", "john@example.com", "password123");
         var authData = userService.register(user);
-        HashMap<String, GameData> expected = new HashMap<>();
+        HashMap<Integer, GameData> expected = new HashMap<>();
         var games = userService.list(authData.authToken());
         assertEquals(expected, games);
     }
@@ -224,7 +224,7 @@ class UserServiceTest {
         var user = new UserData("john", "john@example.com", "password123");
         var authData = userService.register(user);
         var gameID = userService.create(authData.authToken(), "john's game");
-        var wrongGameID = gameID + "WRONG";
+        var wrongGameID = gameID + 1;
         var ex = assertThrows(Exception.class, () -> userService.join(authData.authToken(), "WHITE", wrongGameID));
         assertEquals("Game not found", ex.getMessage());
     }

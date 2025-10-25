@@ -10,10 +10,10 @@ public interface DataAccess {
     void createAuth(AuthData authData);
     AuthData getAuth(String authToken);
     void deleteAuth(String authToken);
-    String createGame(GameData gameData);
-    GameData getGame(String gameID);
+    int createGame(GameData gameData);
+    GameData getGame(int gameID);
     void updateGame(GameData gameData);
-    HashMap<String, GameData> getGames();
+    HashMap<Integer, GameData> getGames();
 
     void clear();
 }
