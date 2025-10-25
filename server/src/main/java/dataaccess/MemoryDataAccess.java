@@ -1,10 +1,10 @@
 package dataaccess;
 
 import datamodel.*;
-
 import java.util.HashMap;
 
 public class MemoryDataAccess implements DataAccess {
+
     private final HashMap<String, UserData> users = new HashMap<>();
     private final HashMap<String, AuthData> authTokens = new HashMap<>();
     private final HashMap<Integer, GameData> games = new HashMap<>();

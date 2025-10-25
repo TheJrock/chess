@@ -12,7 +12,6 @@ import service.UserService;
 import dataaccess.MemoryDataAccess;
 import datamodel.UserData;
 import datamodel.AuthData;
-
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -23,8 +22,8 @@ public class Server {
     private static final Gson serializer = new Gson();
 
     public Server() {
-        service = new UserService(new MemoryDataAccess());
 
+        service = new UserService(new MemoryDataAccess());
         server = Javalin.create(config -> config.staticFiles.add("web"));
         server.post("/user", this::register);
         server.post("/session", this::login);
@@ -37,6 +36,7 @@ public class Server {
     }
 
     private void clearDatabase(Context ctx) {
+
         try {
             service.clear();
             ctx.status(200).result("{}").contentType("application/json");
@@ -46,6 +46,7 @@ public class Server {
     }
 
     private void register(Context ctx) {
+
         try {
             String reqJson = ctx.body();
             UserData user = serializer.fromJson(reqJson, UserData.class);
@@ -69,6 +70,7 @@ public class Server {
     }
 
     private void login(Context ctx) {
+
         try {
             String reqJson = ctx.body();
             UserData user = serializer.fromJson(reqJson, UserData.class);
@@ -92,6 +94,7 @@ public class Server {
     }
 
     private void logout(Context ctx) {
+
         try {
             String authToken = ctx.header("Authorization");
             service.logout(authToken);
@@ -110,6 +113,7 @@ public class Server {
     }
 
     private void create(Context ctx) {
+
         try {
             String reqJson = ctx.body();
             GameData gameData = serializer.fromJson(reqJson, GameData.class);
@@ -134,6 +138,7 @@ public class Server {
     }
 
     private void list(Context ctx) {
+
         try {
             String authToken = ctx.header("Authorization");
             var games = service.list(authToken);
@@ -154,6 +159,7 @@ public class Server {
     }
 
     private void join(Context ctx) {
+        
         try {
             String reqJson = ctx.body();
             JoinRequest request = serializer.fromJson(reqJson, JoinRequest.class);
