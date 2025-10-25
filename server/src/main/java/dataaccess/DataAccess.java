@@ -12,7 +12,8 @@ public interface DataAccess {
     AuthData getAuth(String authToken);
     void deleteAuth(String authToken);
     String createGame(GameData gameData);
-    GameData getGame(String gameId);
+    GameData getGame(String gameID);
+    void updateGame(GameData gameData);
     HashMap<String, GameData> getGames();
 
     void clear();

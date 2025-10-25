@@ -2,11 +2,9 @@ package service;
 
 import dataaccess.*;
 import datamodel.*;
-import io.javalin.http.BadRequestResponse;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
@@ -63,7 +61,7 @@ public class UserService {
         if (authToken == null || authToken.isEmpty() || dataAccess.getAuth(authToken) == null) {
             throw new UnauthorizedException("Failed to authorize user");
         }
-        return dataAccess.createGame(new GameData(generateGameId(), null, null, gameName));
+        return dataAccess.createGame(new GameData(generateGameID(), null, null, gameName));
     }
 
     public HashMap<String, GameData> list(String authToken) throws UnauthorizedException {
@@ -73,29 +71,48 @@ public class UserService {
         return dataAccess.getGames();
     }
 
-    public void join(String authToken, String team, String gameId) throws UnauthorizedException, DataAccessException {
+    public void join(String authToken, String team, String gameID) throws UnauthorizedException, DataAccessException {
         if (authToken == null || authToken.isEmpty() || dataAccess.getAuth(authToken) == null) {
             throw new UnauthorizedException("Failed to authorize user");
         }
-        if (gameId == null || gameId.isBlank() || dataAccess.getGame(gameId) == null) {
+        if (gameID == null || gameID.isBlank() || dataAccess.getGame(gameID) == null) {
             throw new DataAccessException("Game not found");
         }
-        GameData oldGame = dataAccess.getGame(gameId);
+        GameData oldGame = dataAccess.getGame(gameID);
         String username = dataAccess.getAuth(authToken).username();
-        if (team.equals("WHITE")) {
-            GameData newGame = new GameData(oldGame.gameId(), username, oldGame.blackUsername(), oldGame.gameName());
-        } else if (team.equals("BLACK")) {
-            GameData newGame = new GameData(oldGame.gameId(), oldGame.whiteUsername(), username, oldGame.gameName());
-        } else {
+        GameData newGame = updateGame(team, oldGame, username);
+        dataAccess.updateGame(newGame);
+    }
+
+    @NotNull
+    private static GameData updateGame(String team, GameData oldGame, String username) throws DataAccessException {
+        String white = oldGame.whiteUsername();
+        String black = oldGame.blackUsername();
+        if (team == null || team.isBlank()) {
             throw new DataAccessException("Unsupported team");
         }
+        switch (team.toUpperCase()) {
+            case "WHITE" -> {
+                if (white != null) throw new DataAccessException("Spot already taken");
+                white = username;
+            }
+            case "BLACK" -> {
+                if (black != null) throw new DataAccessException("Spot already taken");
+                black = username;
+            }
+            case "WHITE/BLACK" -> {
+                // Join as observer
+            }
+            default -> throw new DataAccessException("Unsupported team");
+        }
+        return new GameData(oldGame.gameID(), white, black, oldGame.gameName());
     }
 
     private String generateAuthToken() {
         return UUID.randomUUID().toString();
     }
 
-    private String generateGameId() {
+    private String generateGameID() {
         return UUID.randomUUID().toString();
     }
 }
