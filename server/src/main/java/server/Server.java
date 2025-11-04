@@ -18,6 +18,7 @@ public class Server {
     public Server(DataAccess dataAccess) {
         service = new UserService(dataAccess);
         server = Javalin.create(config -> config.staticFiles.add("web"));
+        registerRoutes();
     }
 
     public Server() {
