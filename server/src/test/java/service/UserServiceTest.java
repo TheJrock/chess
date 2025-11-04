@@ -1,8 +1,7 @@
 package service;
 
-import dataaccess.DataAccess;
+import dataaccess.*;
 import org.junit.jupiter.api.Test;
-import dataaccess.MysqlDataAccess;
 import datamodel.*;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;

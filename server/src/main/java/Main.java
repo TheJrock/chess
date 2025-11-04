@@ -1,5 +1,4 @@
-import dataaccess.DataAccess;
-import dataaccess.MysqlDataAccess;
+import dataaccess.*;
 import server.Server;
 
 public class Main {

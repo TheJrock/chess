@@ -1,17 +1,11 @@
 package server;
 
+import dataaccess.*;
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
-import dataaccess.UnauthorizedException;
-import dataaccess.UserAlreadyExistsException;
-import datamodel.GameData;
-import datamodel.JoinRequest;
+import datamodel.*;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import service.UserService;
-import dataaccess.MysqlDataAccess;
-import datamodel.UserData;
-import datamodel.AuthData;
 import java.util.ArrayList;
 import java.util.Map;
 
