@@ -11,7 +11,7 @@ public class Main {
                 port = Integer.parseInt(args[0]);
             }
 
-            DataAccess dataAccess = new MysqlDataAccess();
+            DataAccess dataAccess = new MemoryDataAccess();
             if (args.length >= 2 && args[1].equals("sql")) {
                 dataAccess = new MysqlDataAccess();
             }
