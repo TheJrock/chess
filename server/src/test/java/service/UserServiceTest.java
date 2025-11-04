@@ -3,6 +3,7 @@ package service;
 import dataaccess.DataAccess;
 import org.junit.jupiter.api.Test;
 import dataaccess.MemoryDataAccess;
+import dataaccess.MysqlDataAccess;
 import datamodel.*;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,7 +17,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        dataAccess = new MemoryDataAccess();
+        dataAccess = new MysqlDataAccess();
         dataAccess.clear();
         userService = new UserService(dataAccess);
     }

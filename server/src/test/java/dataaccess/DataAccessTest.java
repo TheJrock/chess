@@ -7,10 +7,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DataAccessTest {
 
-    private MemoryDataAccess dataAccess;
+    private DataAccess dataAccess;
     @BeforeEach
     void setUp() {
-        dataAccess = new MemoryDataAccess();
+        dataAccess = new MysqlDataAccess();
         dataAccess.clear();
     }
 
