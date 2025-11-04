@@ -17,7 +17,7 @@ public class Server {
 
     public Server() {
 
-        service = new UserService(new MysqlDataAccess());
+        service = new UserService(new MemoryDataAccess());
         server = Javalin.create(config -> config.staticFiles.add("web"));
         server.post("/user", this::register);
         server.post("/session", this::login);

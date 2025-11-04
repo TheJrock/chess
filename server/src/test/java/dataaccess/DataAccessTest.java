@@ -10,7 +10,7 @@ class DataAccessTest {
     private DataAccess dataAccess;
     @BeforeEach
     void setUp() {
-        dataAccess = new MysqlDataAccess();
+        dataAccess = new MemoryDataAccess();
         dataAccess.clear();
     }
 

@@ -13,7 +13,7 @@ public class Main {
 
             DataAccess dataAccess = new MemoryDataAccess();
             if (args.length >= 2 && args[1].equals("sql")) {
-                dataAccess = new MysqlDataAccess();
+                dataAccess = new MemoryDataAccess();
             }
 
             var server = new Server();
