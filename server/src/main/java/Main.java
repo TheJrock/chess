@@ -13,10 +13,10 @@ public class Main {
 
             DataAccess dataAccess = new MemoryDataAccess();
             if (args.length >= 2 && args[1].equals("sql")) {
-                dataAccess = new MemoryDataAccess();
+                dataAccess = new MysqlDataAccess();
             }
 
-            var server = new Server();
+            var server = new Server(dataAccess);
             server.run(port);
             port = server.port();
             System.out.printf("Server started on port %d with %s%n", port, dataAccess.getClass());
