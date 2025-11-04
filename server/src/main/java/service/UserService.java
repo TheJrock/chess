@@ -34,7 +34,7 @@ public class UserService {
             throw new UserAlreadyExistsException("Username Unavailable");
         }
 
-        AuthData authData = new AuthData(user.username(), generateAuthToken());
+        AuthData authData = new AuthData(generateAuthToken(), user.username());
         dataAccess.createUser(user);
         dataAccess.createAuth(authData);
 
@@ -52,7 +52,7 @@ public class UserService {
             throw new UnauthorizedException("Invalid username or password");
         }
 
-        AuthData authData = new AuthData(user.username(), generateAuthToken());
+        AuthData authData = new AuthData(generateAuthToken(), user.username());
         dataAccess.createAuth(authData);
 
         return authData;

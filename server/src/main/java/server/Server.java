@@ -9,7 +9,7 @@ import datamodel.JoinRequest;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import service.UserService;
-import dataaccess.MemoryDataAccess;
+import dataaccess.MysqlDataAccess;
 import datamodel.UserData;
 import datamodel.AuthData;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class Server {
 
     public Server() {
 
-        service = new UserService(new MemoryDataAccess());
+        service = new UserService(new MysqlDataAccess());
         server = Javalin.create(config -> config.staticFiles.add("web"));
         server.post("/user", this::register);
         server.post("/session", this::login);

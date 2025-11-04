@@ -1,5 +1,5 @@
 import dataaccess.DataAccess;
-import dataaccess.MemoryDataAccess;
+import dataaccess.MysqlDataAccess;
 import server.Server;
 
 public class Main {
@@ -12,9 +12,9 @@ public class Main {
                 port = Integer.parseInt(args[0]);
             }
 
-            DataAccess dataAccess = new MemoryDataAccess();
+            DataAccess dataAccess = new MysqlDataAccess();
             if (args.length >= 2 && args[1].equals("sql")) {
-                dataAccess = new MemoryDataAccess();
+                dataAccess = new MysqlDataAccess();
             }
 
             var server = new Server();
