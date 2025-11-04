@@ -15,10 +15,16 @@ public class Server {
     private final UserService service;
     private static final Gson serializer = new Gson();
 
-    public Server() {
-
-        service = new UserService(new MemoryDataAccess());
+    public Server(DataAccess dataAccess) {
+        service = new UserService(dataAccess);
         server = Javalin.create(config -> config.staticFiles.add("web"));
+    }
+
+    public Server() {
+        this(new MemoryDataAccess());
+    }
+
+    private void registerRoutes() {
         server.post("/user", this::register);
         server.post("/session", this::login);
         server.delete("/session", this::logout);
