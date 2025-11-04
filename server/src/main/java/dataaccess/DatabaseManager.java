@@ -72,6 +72,13 @@ public class DatabaseManager {
 
         var host = props.getProperty("db.host");
         var port = Integer.parseInt(props.getProperty("db.port"));
-        connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
+        if (databaseName == null || dbUsername == null || host == null) {
+            throw new RuntimeException("Missing database configuration in db.properties");
+        }
+
+        connectionUrl = String.format(
+                "jdbc:mysql://%s:%d?serverTimezone=UTC&useSSL=false",
+                host, port
+        );
     }
 }
