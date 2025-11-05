@@ -8,6 +8,7 @@ public class MysqlDataAccess implements DataAccess {
 
     public MysqlDataAccess() {
         try {
+            DatabaseManager.createDatabase();
             configureDatabase();
         } catch (DataAccessException e) {
             throw new RuntimeException("Failed to configure database: " + e.getMessage(), e);
@@ -17,7 +18,7 @@ public class MysqlDataAccess implements DataAccess {
     }
 
     private void configureDatabase() throws SQLException, DataAccessException {
-        DatabaseManager.createDatabase();
+//        DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection();
              var stmt = conn.createStatement()) {
 
@@ -68,7 +69,6 @@ public class MysqlDataAccess implements DataAccess {
             ps.setString(2, user.email());
             ps.setString(3, user.password());
             ps.executeUpdate();
-            conn.commit();
 
         } catch (SQLException e) {
             if (e.getMessage().contains("Duplicate")) {
@@ -116,7 +116,6 @@ public class MysqlDataAccess implements DataAccess {
             ps.setString(1, authData.authToken());
             ps.setString(2, authData.username());
             ps.executeUpdate();
-            conn.commit();
 
         } catch (SQLException e) {
             throw new RuntimeException("Database error while creating auth", e);
@@ -156,7 +155,6 @@ public class MysqlDataAccess implements DataAccess {
 
             ps.setString(1, authToken);
             ps.executeUpdate();
-            conn.commit();
 
         } catch (SQLException e) {
             throw new RuntimeException("Database error while deleting auth", e);
@@ -177,7 +175,6 @@ public class MysqlDataAccess implements DataAccess {
             ps.setString(2, gameData.blackUsername());
             ps.setString(3, gameData.gameName());
             ps.executeUpdate();
-            conn.commit();
 
             try (var rs = ps.getGeneratedKeys()) {
                 if (rs.next()) return rs.getInt(1);
@@ -229,7 +226,6 @@ public class MysqlDataAccess implements DataAccess {
             ps.setString(2, gameData.blackUsername());
             ps.setString(3, gameData.gameName());
             ps.setInt(4, gameData.gameID());
-            conn.commit();
 
             int rows = ps.executeUpdate();
             if (rows == 0) {
@@ -277,7 +273,6 @@ public class MysqlDataAccess implements DataAccess {
             stmt.executeUpdate("DELETE FROM auth");
             stmt.executeUpdate("DELETE FROM game");
             stmt.executeUpdate("DELETE FROM user");
-            conn.commit();
 
         } catch (SQLException e) {
             throw new RuntimeException("Database error while clearing tables", e);
