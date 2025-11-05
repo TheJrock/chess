@@ -64,6 +64,8 @@ public class MysqlDataAccess implements DataAccess {
         try (var conn = DatabaseManager.getConnection();
              var ps = conn.prepareStatement(statement)) {
 
+            conn.setAutoCommit(true);
+
             ps.setString(1, user.username());
             ps.setString(2, user.email());
             ps.setString(3, user.password());
@@ -112,6 +114,8 @@ public class MysqlDataAccess implements DataAccess {
         try (var conn = DatabaseManager.getConnection();
              var ps = conn.prepareStatement(statement)) {
 
+            conn.setAutoCommit(true);
+
             ps.setString(1, authData.authToken());
             ps.setString(2, authData.username());
             ps.executeUpdate();
@@ -151,6 +155,9 @@ public class MysqlDataAccess implements DataAccess {
         String statement = "DELETE FROM auth WHERE authToken = ?";
         try (var conn = DatabaseManager.getConnection();
              var ps = conn.prepareStatement(statement)) {
+
+            conn.setAutoCommit(true);
+
             ps.setString(1, authToken);
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -167,6 +174,8 @@ public class MysqlDataAccess implements DataAccess {
         String statement = "INSERT INTO game (whiteUsername, blackUsername, gameName) VALUES (?, ?, ?)";
         try (var conn = DatabaseManager.getConnection();
              var ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
+
+            conn.setAutoCommit(true);
 
             ps.setString(1, gameData.whiteUsername());
             ps.setString(2, gameData.blackUsername());
@@ -219,6 +228,8 @@ public class MysqlDataAccess implements DataAccess {
         try (var conn = DatabaseManager.getConnection();
              var ps = conn.prepareStatement(statement)) {
 
+            conn.setAutoCommit(true);
+
             ps.setString(1, gameData.whiteUsername());
             ps.setString(2, gameData.blackUsername());
             ps.setString(3, gameData.gameName());
@@ -265,6 +276,9 @@ public class MysqlDataAccess implements DataAccess {
     public void clear() {
         try (var conn = DatabaseManager.getConnection();
              var stmt = conn.createStatement()) {
+
+            conn.setAutoCommit(true);
+
             stmt.executeUpdate("DELETE FROM auth");
             stmt.executeUpdate("DELETE FROM game");
             stmt.executeUpdate("DELETE FROM user");
