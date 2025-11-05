@@ -43,11 +43,14 @@ public class DatabaseManager {
      */
     static Connection getConnection() {
         try {
+            try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
+                 var stmt = conn.createStatement()) {
+                stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS " + databaseName);
+//            } catch (SQLException ex) {
+//                throw new RuntimeException("Failed to create database", ex);
+            }
             //do not wrap the following line with a try-with-resources
             var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
-            try {
-                createDatabase();
-            } catch (DataAccessException ignored) {}
             conn.setCatalog(databaseName);
             conn.setAutoCommit(true);
             return conn;
