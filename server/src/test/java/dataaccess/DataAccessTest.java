@@ -42,7 +42,7 @@ class DataAccessTest {
     void getUser() {
         dataAccess.createUser(new UserData("username", "email", "password"));
         UserData user = dataAccess.getUser("username");
-        assert user.equals(new UserData("username", "email", "password"));
+        assertEquals(new UserData("username", "email", "password"), user);
     }
 
     @Test
@@ -57,7 +57,6 @@ class DataAccessTest {
         var auth = new AuthData("token123", user.username());
         dataAccess.createAuth(auth);
         var retrieved = dataAccess.getAuth("token123");
-        assertNotNull(retrieved);
         assertEquals("username", retrieved.username());
         assertEquals("token123", retrieved.authToken());
     }
@@ -73,6 +72,31 @@ class DataAccessTest {
     }
 
     @Test
+    void getAuthToken() throws DataAccessException {
+        var user = new UserData("username", "email", "password");
+        dataAccess.createUser(user);
+        var auth = new AuthData("token123", user.username());
+        dataAccess.createAuth(auth);
+        var retrieved = dataAccess.getAuth("token123");
+        assertNotNull(retrieved);
+    }
+
+    @Test
+    void getAuthTokenInvalid() throws DataAccessException {
+        assertNull(dataAccess.getAuth("token123"));
+    }
+
+    @Test
+    void deleteAuthToken() throws DataAccessException {
+        var user = new UserData("username", "email", "password");
+        dataAccess.createUser(user);
+        var auth = new AuthData("token123", user.username());
+        dataAccess.createAuth(auth);
+        dataAccess.deleteAuth("token123");
+        assertNull(dataAccess.getAuth("token123"));
+    }
+
+    @Test
     void createGame() throws DataAccessException {
         var user1 = new UserData("whiteUser", "email", "password");
         var user2 = new UserData("blackUser", "email", "password");
@@ -83,6 +107,27 @@ class DataAccessTest {
 
         var retrieved = dataAccess.getGame(gameID);
 
+        assertNotNull(retrieved);
+        assertEquals("whiteUser", retrieved.whiteUsername());
+        assertEquals("blackUser", retrieved.blackUsername());
+        assertEquals("Friendly Match", retrieved.gameName());
+    }
+
+    @Test
+    void createGameBadUsers() throws DataAccessException {
+        var ex = assertThrows(Exception.class, () -> dataAccess.createGame(new GameData(1, "whiteUser", "blackUser", "Friendly Match")));
+        assertEquals("Database error while creating game", ex.getMessage());
+    }
+
+    @Test
+    void getGame() throws DataAccessException {
+        var user = new UserData("whiteUser", "email", "password");
+        var user2 = new UserData("blackUser", "email2", "password2");
+        dataAccess.createUser(user);
+        dataAccess.createUser(user2);
+        var game = new GameData(1, "whiteUser", "blackUser", "Friendly Match");
+        var gameID = dataAccess.createGame(game);
+        var retrieved = dataAccess.getGame(gameID);
         assertNotNull(retrieved);
         assertEquals("whiteUser", retrieved.whiteUsername());
         assertEquals("blackUser", retrieved.blackUsername());
