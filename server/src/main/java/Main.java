@@ -17,9 +17,8 @@ public class Main {
             }
 
             var server = new Server(dataAccess);
-            server.run(port);
-            port = server.port();
-            System.out.printf("Server started on port %d with %s%n", port, dataAccess.getClass());
+            int run = server.run(port);
+            System.out.printf("Server started on port %d with %s%n", run, dataAccess.getClass());
 
             return;
 

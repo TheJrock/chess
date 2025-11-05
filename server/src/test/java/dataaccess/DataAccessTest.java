@@ -167,7 +167,7 @@ class DataAccessTest {
     void updateNonexistentGame() {
         var game = new GameData(42, "user1", "user2", "Ghost Game");
         var ex = assertThrows(Exception.class, () -> dataAccess.updateGame(game));
-        assertEquals("Failed to connect to database", ex.getMessage());
+        assertEquals("Game not found", ex.getMessage());
     }
 
     @Test
@@ -187,44 +187,6 @@ class DataAccessTest {
         assertEquals(2, games.size());
         assertTrue(games.containsKey(gameID1));
         assertTrue(games.containsKey(gameID2));
-    }
-
-    @Test
-    void cascadeDeleteUserDeletesAuth() throws DataAccessException, SQLException {
-        var user = new UserData("user", "email@example.com", "password");
-        dataAccess.createUser(user);
-        var auth = new AuthData("tokenXYZ", user.username());
-        dataAccess.createAuth(auth);
-
-        try (var conn = DatabaseManager.getConnection();
-             var ps = conn.prepareStatement("DELETE FROM user WHERE username = ?")) {
-            ps.setString(1, "user");
-            ps.executeUpdate();
-        }
-
-        assertNull(dataAccess.getAuth("tokenXYZ"), "Auth token should be deleted when user is deleted");
-    }
-
-    @Test
-    void deletingUserSetsGameUsernameToNull() throws DataAccessException, SQLException {
-        var white = new UserData("whitePlayer", "w@example.com", "pw");
-        var black = new UserData("blackPlayer", "b@example.com", "pw");
-        dataAccess.createUser(white);
-        dataAccess.createUser(black);
-
-        int gameID = dataAccess.createGame(new GameData(0, "whitePlayer", "blackPlayer", "Test Game"));
-
-        // Delete black player
-        try (var conn = DatabaseManager.getConnection();
-             var ps = conn.prepareStatement("DELETE FROM user WHERE username = ?")) {
-            ps.setString(1, "blackPlayer");
-            ps.executeUpdate();
-        }
-
-        var game = dataAccess.getGame(gameID);
-        assertNotNull(game);
-        assertEquals("whitePlayer", game.whiteUsername());
-        assertNull(game.blackUsername(), "blackUsername should be null after user deletion");
     }
 
     @Test

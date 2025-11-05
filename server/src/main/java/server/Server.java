@@ -22,7 +22,7 @@ public class Server {
     }
 
     public Server() {
-        this(new MemoryDataAccess());
+        this(new MysqlDataAccess());
     }
 
     private void registerRoutes() {
