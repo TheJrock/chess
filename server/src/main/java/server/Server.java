@@ -13,7 +13,7 @@ public class Server {
 
     private final Javalin server;
     private final UserService service;
-    private static final Gson serializer = new Gson();
+    private static final Gson SERIALIZER = new Gson();
 
     public Server(DataAccess dataAccess) {
         service = new UserService(dataAccess);
@@ -33,7 +33,7 @@ public class Server {
         server.get("/game", this::list);
         server.put("/game", this::join);
         server.delete("/db", this::clearDatabase);
-        server.exception(DataAccessException.class, (ex, ctx) -> ctx.status(500).result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage()))));
+        server.exception(DataAccessException.class, (ex, ctx) -> ctx.status(500).result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage()))));
     }
 
     private void clearDatabase(Context ctx) {
@@ -42,7 +42,7 @@ public class Server {
             service.clear();
             ctx.status(200).result("{}").contentType("application/json");
         } catch (Exception ex) {
-            ctx.status(500).result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+            ctx.status(500).result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
     }
 
@@ -50,23 +50,23 @@ public class Server {
 
         try {
             String reqJson = ctx.body();
-            UserData user = serializer.fromJson(reqJson, UserData.class);
+            UserData user = SERIALIZER.fromJson(reqJson, UserData.class);
             AuthData authData = service.register(user);
             ctx.status(200)
                     .contentType("application/json")
-                    .result(serializer.toJson(authData));
+                    .result(SERIALIZER.toJson(authData));
         } catch (IllegalArgumentException ex) {
             ctx.status(400)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (UserAlreadyExistsException ex) {
             ctx.status(403)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (Exception ex) {
             ctx.status(500)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
     }
 
@@ -74,23 +74,23 @@ public class Server {
 
         try {
             String reqJson = ctx.body();
-            UserData user = serializer.fromJson(reqJson, UserData.class);
+            UserData user = SERIALIZER.fromJson(reqJson, UserData.class);
             AuthData authData = service.login(user.username(), user.password());
             ctx.status(200)
                     .contentType("application/json")
-                    .result(serializer.toJson(authData));
+                    .result(SERIALIZER.toJson(authData));
         } catch (IllegalArgumentException ex) {
             ctx.status(400)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (UnauthorizedException ex) {
             ctx.status(401)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (Exception ex) {
             ctx.status(500)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
     }
 
@@ -101,15 +101,15 @@ public class Server {
             service.logout(authToken);
             ctx.status(200)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Logout successful")));
+                    .result(SERIALIZER.toJson(Map.of("message", "Logout successful")));
         } catch (UnauthorizedException ex) {
             ctx.status(401)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (Exception ex) {
             ctx.status(500)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
     }
 
@@ -117,24 +117,24 @@ public class Server {
 
         try {
             String reqJson = ctx.body();
-            GameData gameData = serializer.fromJson(reqJson, GameData.class);
+            GameData gameData = SERIALIZER.fromJson(reqJson, GameData.class);
             String authToken = ctx.header("Authorization");
             int gameID = service.create(authToken, gameData.gameName());
             ctx.status(200)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("gameID", gameID)));
+                    .result(SERIALIZER.toJson(Map.of("gameID", gameID)));
         } catch (IllegalArgumentException ex) {
             ctx.status(400)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (UnauthorizedException ex) {
             ctx.status(401)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (Exception ex) {
             ctx.status(500)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
     }
 
@@ -147,15 +147,15 @@ public class Server {
             var response = Map.of("games", gameList);
             ctx.status(200)
                     .contentType("application/json")
-                    .result(serializer.toJson(response));
+                    .result(SERIALIZER.toJson(response));
         } catch (UnauthorizedException ex) {
             ctx.status(401)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (Exception ex) {
             ctx.status(500)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
     }
 
@@ -163,29 +163,29 @@ public class Server {
         
         try {
             String reqJson = ctx.body();
-            JoinRequest request = serializer.fromJson(reqJson, JoinRequest.class);
+            JoinRequest request = SERIALIZER.fromJson(reqJson, JoinRequest.class);
             String authToken = ctx.header("Authorization");
             int gameID = request.gameID();
             service.join(authToken, request.playerColor(), gameID);
             ctx.status(200)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Join successful")));
+                    .result(SERIALIZER.toJson(Map.of("message", "Join successful")));
         } catch (IllegalArgumentException ex) {
             ctx.status(400)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (UnauthorizedException ex) {
             ctx.status(401)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (DataAccessException ex) {
             ctx.status(403)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         } catch (Exception ex) {
             ctx.status(500)
                     .contentType("application/json")
-                    .result(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+                    .result(SERIALIZER.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
     }
 
@@ -196,9 +196,5 @@ public class Server {
 
     public void stop() {
         server.stop();
-    }
-
-    public int port() {
-        return server.port();
     }
 }

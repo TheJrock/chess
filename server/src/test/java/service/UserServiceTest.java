@@ -127,7 +127,7 @@ class UserServiceTest {
         var user = new UserData("john", "john@example.com", "password123");
         var authData = userService.register(user);
         var gameID = userService.create(authData.authToken(), "john's game");
-        assertNotNull(gameID);
+        assertEquals("john's game", dataAccess.getGame(gameID).gameName());
     }
 
     @Test

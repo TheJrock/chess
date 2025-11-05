@@ -4,8 +4,6 @@ import datamodel.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class DataAccessTest {
@@ -54,7 +52,7 @@ class DataAccessTest {
     }
 
     @Test
-    void createAuthToken() throws DataAccessException {
+    void createAuthToken() {
         var user = new UserData("username", "email", "password");
         dataAccess.createUser(user);
         var auth = new AuthData("token123", user.username());
@@ -65,7 +63,7 @@ class DataAccessTest {
     }
 
     @Test
-    void createAuthTokenDuplicate() throws DataAccessException {
+    void createAuthTokenDuplicate() {
         var user = new UserData("user", "email", "password");
         dataAccess.createUser(user);
         var auth = new AuthData("tokenABC", user.username());
@@ -75,7 +73,7 @@ class DataAccessTest {
     }
 
     @Test
-    void getAuthToken() throws DataAccessException {
+    void getAuthToken() {
         var user = new UserData("username", "email", "password");
         dataAccess.createUser(user);
         var auth = new AuthData("token123", user.username());
@@ -85,12 +83,12 @@ class DataAccessTest {
     }
 
     @Test
-    void getAuthTokenInvalid() throws DataAccessException {
+    void getAuthTokenInvalid() {
         assertNull(dataAccess.getAuth("token123"));
     }
 
     @Test
-    void deleteAuthToken() throws DataAccessException {
+    void deleteAuthToken() {
         var user = new UserData("username", "email", "password");
         dataAccess.createUser(user);
         var auth = new AuthData("token123", user.username());
@@ -100,7 +98,7 @@ class DataAccessTest {
     }
 
     @Test
-    void createGame() throws DataAccessException {
+    void createGame() {
         var user1 = new UserData("whiteUser", "email", "password");
         var user2 = new UserData("blackUser", "email", "password");
         dataAccess.createUser(user1);
@@ -117,13 +115,13 @@ class DataAccessTest {
     }
 
     @Test
-    void createGameBadUsers() throws DataAccessException {
+    void createGameBadUsers() {
         var ex = assertThrows(Exception.class, () -> dataAccess.createGame(new GameData(1, "whiteUser", "blackUser", "Friendly Match")));
         assertEquals("Database error while creating game", ex.getMessage());
     }
 
     @Test
-    void getGame() throws DataAccessException {
+    void getGame() {
         var user = new UserData("whiteUser", "email", "password");
         var user2 = new UserData("blackUser", "email2", "password2");
         dataAccess.createUser(user);
@@ -138,7 +136,7 @@ class DataAccessTest {
     }
 
     @Test
-    void getNonexistentGame() throws DataAccessException {
+    void getNonexistentGame() {
         var result = dataAccess.getGame(999);
         assertNull(result);
     }
@@ -171,7 +169,7 @@ class DataAccessTest {
     }
 
     @Test
-    void getGames() throws DataAccessException {
+    void getGames() {
         var u1 = new UserData("u1", "email@example.com", "password");
         var u2 = new UserData("u2", "email2@example.com", "password");
         var u3 = new UserData("u3", "email3@example.com", "password");
@@ -190,7 +188,7 @@ class DataAccessTest {
     }
 
     @Test
-    void createGameWithNoPlayers() throws DataAccessException {
+    void createGameWithNoPlayers() {
         var game = new GameData(0, null, null, "Solo Game");
         int gameID = dataAccess.createGame(game);
         var retrieved = dataAccess.getGame(gameID);
@@ -201,7 +199,7 @@ class DataAccessTest {
     }
 
     @Test
-    void duplicateAuthTokenDifferentUsersFails() throws DataAccessException {
+    void duplicateAuthTokenDifferentUsersFails() {
         var user1 = new UserData("user1", "email1", "pw");
         var user2 = new UserData("user2", "email2", "pw");
         dataAccess.createUser(user1);
@@ -213,7 +211,7 @@ class DataAccessTest {
     }
 
     @Test
-    void clearDeletesUsersAuthsAndGames() throws DataAccessException {
+    void clearDeletesUsersAuthsAndGames() {
         var user = new UserData("u", "email", "pw");
         dataAccess.createUser(user);
         dataAccess.createAuth(new AuthData("t", "u"));
