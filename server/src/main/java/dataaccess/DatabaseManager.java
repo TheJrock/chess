@@ -77,7 +77,7 @@ public class DatabaseManager {
         }
 
         connectionUrl = String.format(
-                "jdbc:mysql://%s:%d?serverTimezone=UTC&useSSL=false",
+                "jdbc:mysql://%s:%d?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true",
                 host, port
         );
     }
