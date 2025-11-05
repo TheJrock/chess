@@ -234,13 +234,13 @@ public class MysqlDataAccess implements DataAccess {
             conn.commit();
 
             if (rows == 0) {
-                throw new DataAccessException("Game not found");
+                throw new RuntimeException("Game not found");
             }
 
         } catch (SQLException e) {
             throw new RuntimeException("Database error while updating game", e);
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Failed to connect to database", e);
+//        } catch (DataAccessException e) {
+//            throw new RuntimeException("Failed to connect to database", e);
         }
     }
 
