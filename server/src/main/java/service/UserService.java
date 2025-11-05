@@ -52,10 +52,8 @@ public class UserService {
             throw new IllegalArgumentException("Username and password are required");
         }
 
-        String hashedPassword = hashPassword(password);
-
         var user = dataAccess.getUser(username);
-        if (user == null || !user.password().equals(hashedPassword)) {
+        if (user == null || !BCrypt.checkpw(password, user.password())) {
             throw new UnauthorizedException("Invalid username or password");
         }
 
