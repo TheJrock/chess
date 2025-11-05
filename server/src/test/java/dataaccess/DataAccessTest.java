@@ -1,6 +1,6 @@
 package dataaccess;
 
-import datamodel.UserData;
+import datamodel.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,7 +10,7 @@ class DataAccessTest {
     private DataAccess dataAccess;
     @BeforeEach
     void setUp() {
-        dataAccess = new MemoryDataAccess();
+        dataAccess = new MysqlDataAccess();
         dataAccess.clear();
     }
 
@@ -32,6 +32,13 @@ class DataAccessTest {
     }
 
     @Test
+    void createDuplicateUser() {
+        dataAccess.createUser(new UserData("username", "email", "password"));
+        var ex = assertThrows(Exception.class, () -> dataAccess.createUser(new UserData("username", "differentEmail", "otherPassword")));
+        assertEquals("Username Unavailable", ex.getMessage());
+    }
+
+    @Test
     void getUser() {
         dataAccess.createUser(new UserData("username", "email", "password"));
         UserData user = dataAccess.getUser("username");
@@ -42,4 +49,27 @@ class DataAccessTest {
     void getNonExistingUser() {
         assertNull(dataAccess.getUser("username"), "user should not be found");
     }
+
+    @Test
+    void createAuthToken() throws DataAccessException {
+        var user = new UserData("username", "email", "password");
+        dataAccess.createUser(user);
+        var auth = new AuthData("token123", user.username());
+        dataAccess.createAuth(auth);
+        var retrieved = dataAccess.getAuth("token123");
+        assertNotNull(retrieved);
+        assertEquals("username", retrieved.username());
+        assertEquals("token123", retrieved.authToken());
+    }
+
+    @Test
+    void createAuthTokenDuplicate() throws DataAccessException {
+        var user = new UserData("user", "email", "password");
+        dataAccess.createUser(user);
+        var auth = new AuthData("tokenABC", user.username());
+        dataAccess.createAuth(auth);
+        var ex = assertThrows(Exception.class, () -> dataAccess.createAuth(auth));
+        assertEquals("Database error while creating auth", ex.getMessage());
+    }
+
 }

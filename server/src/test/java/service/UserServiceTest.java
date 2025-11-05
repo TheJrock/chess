@@ -15,7 +15,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        dataAccess = new MemoryDataAccess();
+        dataAccess = new MysqlDataAccess();
         dataAccess.clear();
         userService = new UserService(dataAccess);
     }
