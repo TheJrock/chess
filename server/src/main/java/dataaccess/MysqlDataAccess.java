@@ -219,7 +219,7 @@ public class MysqlDataAccess implements DataAccess {
     }
 
     @Override
-    public void updateGame(GameData gameData) {
+    public void updateGame(GameData gameData) throws DataAccessException {
         String statement = """
             UPDATE game SET whiteUsername = ?, blackUsername = ?, gameName = ? WHERE gameID = ?
         """;
@@ -234,11 +234,11 @@ public class MysqlDataAccess implements DataAccess {
             conn.commit();
 
             if (rows == 0) {
-                throw new RuntimeException("Game not found");
+                throw new DataAccessException("Game not found");
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Database error while updating game", e);
+            throw new DataAccessException("Database error while updating game", e);
 //        } catch (DataAccessException e) {
 //            throw new RuntimeException("Failed to connect to database", e);
         }

@@ -19,7 +19,7 @@ public interface DataAccess {
 
     GameData getGame(int gameID);
 
-    void updateGame(GameData gameData);
+    void updateGame(GameData gameData) throws DataAccessException;
     
     HashMap<Integer, GameData> getGames();
 
