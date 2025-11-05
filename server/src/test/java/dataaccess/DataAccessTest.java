@@ -3,6 +3,9 @@ package dataaccess;
 import datamodel.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class DataAccessTest {
@@ -184,5 +187,80 @@ class DataAccessTest {
         assertEquals(2, games.size());
         assertTrue(games.containsKey(gameID1));
         assertTrue(games.containsKey(gameID2));
+    }
+
+    @Test
+    void cascadeDeleteUserDeletesAuth() throws DataAccessException, SQLException {
+        var user = new UserData("user", "email@example.com", "password");
+        dataAccess.createUser(user);
+        var auth = new AuthData("tokenXYZ", user.username());
+        dataAccess.createAuth(auth);
+
+        try (var conn = DatabaseManager.getConnection();
+             var ps = conn.prepareStatement("DELETE FROM user WHERE username = ?")) {
+            ps.setString(1, "user");
+            ps.executeUpdate();
+        }
+
+        assertNull(dataAccess.getAuth("tokenXYZ"), "Auth token should be deleted when user is deleted");
+    }
+
+    @Test
+    void deletingUserSetsGameUsernameToNull() throws DataAccessException, SQLException {
+        var white = new UserData("whitePlayer", "w@example.com", "pw");
+        var black = new UserData("blackPlayer", "b@example.com", "pw");
+        dataAccess.createUser(white);
+        dataAccess.createUser(black);
+
+        int gameID = dataAccess.createGame(new GameData(0, "whitePlayer", "blackPlayer", "Test Game"));
+
+        // Delete black player
+        try (var conn = DatabaseManager.getConnection();
+             var ps = conn.prepareStatement("DELETE FROM user WHERE username = ?")) {
+            ps.setString(1, "blackPlayer");
+            ps.executeUpdate();
+        }
+
+        var game = dataAccess.getGame(gameID);
+        assertNotNull(game);
+        assertEquals("whitePlayer", game.whiteUsername());
+        assertNull(game.blackUsername(), "blackUsername should be null after user deletion");
+    }
+
+    @Test
+    void createGameWithNoPlayers() throws DataAccessException {
+        var game = new GameData(0, null, null, "Solo Game");
+        int gameID = dataAccess.createGame(game);
+        var retrieved = dataAccess.getGame(gameID);
+        assertNotNull(retrieved);
+        assertNull(retrieved.whiteUsername());
+        assertNull(retrieved.blackUsername());
+        assertEquals("Solo Game", retrieved.gameName());
+    }
+
+    @Test
+    void duplicateAuthTokenDifferentUsersFails() throws DataAccessException {
+        var user1 = new UserData("user1", "email1", "pw");
+        var user2 = new UserData("user2", "email2", "pw");
+        dataAccess.createUser(user1);
+        dataAccess.createUser(user2);
+
+        dataAccess.createAuth(new AuthData("sharedToken", "user1"));
+        var ex = assertThrows(Exception.class, () -> dataAccess.createAuth(new AuthData("sharedToken", "user2")));
+        assertEquals("Database error while creating auth", ex.getMessage());
+    }
+
+    @Test
+    void clearDeletesUsersAuthsAndGames() throws DataAccessException {
+        var user = new UserData("u", "email", "pw");
+        dataAccess.createUser(user);
+        dataAccess.createAuth(new AuthData("t", "u"));
+        dataAccess.createGame(new GameData(0, "u", null, "Game"));
+
+        dataAccess.clear();
+
+        assertTrue(dataAccess.getGames().isEmpty(), "Games should be cleared");
+        assertNull(dataAccess.getAuth("t"), "Auth should be cleared");
+        assertNull(dataAccess.getUser("u"), "User should be cleared");
     }
 }
