@@ -3,6 +3,8 @@ package service;
 import dataaccess.*;
 import datamodel.*;
 import org.jetbrains.annotations.NotNull;
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -34,8 +36,11 @@ public class UserService {
             throw new UserAlreadyExistsException("Username Unavailable");
         }
 
-        AuthData authData = new AuthData(generateAuthToken(), user.username());
-        dataAccess.createUser(user);
+        String hashedPassword = hashPassword(user.password());
+        UserData secureUser = new UserData(user.username(), user.email(), hashedPassword);
+
+        AuthData authData = new AuthData(generateAuthToken(), secureUser.username());
+        dataAccess.createUser(secureUser);
         dataAccess.createAuth(authData);
 
         return authData;
@@ -47,8 +52,10 @@ public class UserService {
             throw new IllegalArgumentException("Username and password are required");
         }
 
+        String hashedPassword = hashPassword(password);
+
         var user = dataAccess.getUser(username);
-        if (user == null || !user.password().equals(password)) {
+        if (user == null || !user.password().equals(hashedPassword)) {
             throw new UnauthorizedException("Invalid username or password");
         }
 
@@ -138,5 +145,9 @@ public class UserService {
 
     private String generateAuthToken() {
         return UUID.randomUUID().toString();
+    }
+
+    private String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 }
