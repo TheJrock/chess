@@ -223,7 +223,10 @@ public class MysqlDataAccess implements DataAccess {
             ps.setString(2, gameData.blackUsername());
             ps.setString(3, gameData.gameName());
             ps.setInt(4, gameData.gameID());
-            ps.executeUpdate();
+            int rows = ps.executeUpdate();
+            if (rows == 0) {
+                throw new DataAccessException("Game not found");
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException("Database error while updating game", e);
