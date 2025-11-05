@@ -76,8 +76,8 @@ public class MysqlDataAccess implements DataAccess {
                 throw new RuntimeException("Username Unavailable");
             }
             throw new RuntimeException("Database error while creating user", e);
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Failed to connect to database", e);
+//        } catch (DataAccessException e) {
+//            throw new RuntimeException("Failed to connect to database", e);
         }
     }
 
@@ -100,8 +100,8 @@ public class MysqlDataAccess implements DataAccess {
             }
         } catch (SQLException e) {
             throw new RuntimeException("Database error while getting user", e);
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Failed to connect to database", e);
+//        } catch (DataAccessException e) {
+//            throw new RuntimeException("Failed to connect to database", e);
         }
     }
 
@@ -119,8 +119,8 @@ public class MysqlDataAccess implements DataAccess {
 
         } catch (SQLException e) {
             throw new RuntimeException("Database error while creating auth", e);
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Failed to connect to database", e);
+//        } catch (DataAccessException e) {
+//            throw new RuntimeException("Failed to connect to database", e);
         }
     }
 
@@ -142,8 +142,8 @@ public class MysqlDataAccess implements DataAccess {
             }
         } catch (SQLException e) {
             throw new RuntimeException("Database error while getting auth", e);
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Failed to connect to database", e);
+//        } catch (DataAccessException e) {
+//            throw new RuntimeException("Failed to connect to database", e);
         }
     }
 
@@ -158,8 +158,8 @@ public class MysqlDataAccess implements DataAccess {
 
         } catch (SQLException e) {
             throw new RuntimeException("Database error while deleting auth", e);
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Failed to connect to database", e);
+//        } catch (DataAccessException e) {
+//            throw new RuntimeException("Failed to connect to database", e);
         }
     }
 
@@ -183,8 +183,8 @@ public class MysqlDataAccess implements DataAccess {
 
         } catch (SQLException e) {
             throw new RuntimeException("Database error while creating game", e);
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Failed to connect to database", e);
+//        } catch (DataAccessException e) {
+//            throw new RuntimeException("Failed to connect to database", e);
         }
     }
 
@@ -209,8 +209,8 @@ public class MysqlDataAccess implements DataAccess {
 
         } catch (SQLException e) {
             throw new RuntimeException("Database error while getting game", e);
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Failed to connect to database", e);
+//        } catch (DataAccessException e) {
+//            throw new RuntimeException("Failed to connect to database", e);
         }
     }
 
@@ -260,8 +260,8 @@ public class MysqlDataAccess implements DataAccess {
 
         } catch (SQLException e) {
             throw new RuntimeException("Database error while listing games", e);
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Failed to connect to database", e);
+//        } catch (DataAccessException e) {
+//            throw new RuntimeException("Failed to connect to database", e);
         }
     }
 
@@ -276,8 +276,8 @@ public class MysqlDataAccess implements DataAccess {
 
         } catch (SQLException e) {
             throw new RuntimeException("Database error while clearing tables", e);
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Failed to connect to database", e);
+//        } catch (DataAccessException e) {
+//            throw new RuntimeException("Failed to connect to database", e);
         }
     }
 }
