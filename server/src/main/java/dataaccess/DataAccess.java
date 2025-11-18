@@ -1,8 +1,7 @@
 package dataaccess;
 
-import datamodel.*;
-
 import java.util.HashMap;
+import datamodel.*;
 
 public interface DataAccess {
     void createUser(UserData user);

@@ -1,7 +1,7 @@
 package dataaccess;
 
-import datamodel.*;
 import java.util.HashMap;
+import datamodel.*;
 
 public class MemoryDataAccess implements DataAccess {
 

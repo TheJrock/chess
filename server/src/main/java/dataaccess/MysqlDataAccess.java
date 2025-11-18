@@ -1,8 +1,8 @@
 package dataaccess;
 
-import datamodel.*;
 import java.sql.*;
 import java.util.HashMap;
+import datamodel.*;
 
 public class MysqlDataAccess implements DataAccess {
 

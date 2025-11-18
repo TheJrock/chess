@@ -2,7 +2,6 @@ package service;
 
 import dataaccess.*;
 import org.junit.jupiter.api.Test;
-import datamodel.*;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
