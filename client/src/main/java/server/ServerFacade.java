@@ -70,13 +70,15 @@ public class ServerFacade {
     public void join(String authToken, String team, int gameID) throws ResponseException {}
 
     private HttpRequest buildRequest(String method, String path, Object body) {
-        var request = HttpRequest.newBuilder()
-                .uri(URI.create(serverUrl + path))
-                .method(method, makeRequestBody(body));
+        var builder = HttpRequest.newBuilder()
+                .uri(URI.create(serverUrl + path));
         if (body != null) {
-            request.setHeader("Content-Type", "application/json");
+            builder.header("Content-Type", "application/json");
+            builder.method(method, makeRequestBody(body));
+        } else {
+            builder.method(method, HttpRequest.BodyPublishers.noBody());
         }
-        return request.build();
+        return builder.build();
     }
 
     private BodyPublisher makeRequestBody(Object request) {
