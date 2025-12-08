@@ -98,21 +98,32 @@ public class ServerFacade {
     }
 
     private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
-        var status = response.statusCode();
+        int status = response.statusCode();
+        String body = response.body();
         if (!isSuccessful(status)) {
-            var body = response.body();
-            if (body != null) {
-                throw ResponseException.fromJson(body);
+            if (body != null && !body.isBlank()) {
+                try {
+                    throw ResponseException.fromJson(body);
+                } catch (Exception _) {
+                }
             }
-
-            throw new ResponseException(ResponseException.fromHttpStatusCode(status), "other failure: " + status);
+            throw new ResponseException(
+                    ResponseException.fromHttpStatusCode(status),
+                    "Server error (" + status + "): " + body
+            );
         }
-
-        if (responseClass != null) {
-            return new Gson().fromJson(response.body(), responseClass);
+        if (responseClass == null || responseClass == Void.class) {
+            return null;
         }
-
-        return null;
+        if (body == null || body.isBlank()) {
+            return null;
+        }
+        try {
+            return new Gson().fromJson(body, responseClass);
+        } catch (Exception e) {
+            var code = ResponseException.fromHttpStatusCode(status);
+            throw new ResponseException(code, "Invalid JSON in response");
+        }
     }
 
     private boolean isSuccessful(int status) {
