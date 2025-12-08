@@ -49,7 +49,8 @@ public class ServerFacade {
     }
 
     public AuthData login(String username, String password) throws ResponseException {
-        var request = buildRequest("POST", "/session", "{\"username\": \"" + username + "\", \"password\": \"" + password + "\"}");
+        var loginRequest = new LoginRequest(username, password);
+        var request = buildRequest("POST", "/session", loginRequest);
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
     }
