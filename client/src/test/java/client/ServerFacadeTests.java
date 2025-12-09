@@ -6,6 +6,8 @@ import server.ServerFacade;
 import exception.ResponseException;
 import datamodel.*;
 
+import java.io.IOException;
+
 public class ServerFacadeTests {
 
     private static Server server;
@@ -17,6 +19,11 @@ public class ServerFacadeTests {
         var port = server.run(8080);
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade("http://localhost:" + port);
+    }
+
+    @BeforeEach
+    public void reset() throws ResponseException {
+        facade.clear();
     }
 
     @AfterAll
