@@ -18,30 +18,6 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public Pet addPet(Pet pet) throws ResponseException {
-        var request = buildRequest("POST", "/pet", pet);
-        var response = sendRequest(request);
-        return handleResponse(response, Pet.class);
-    }
-
-    public void deletePet(int id) throws ResponseException {
-        var path = String.format("/pet/%s", id);
-        var request = buildRequest("DELETE", path, null);
-        var response = sendRequest(request);
-        handleResponse(response, null);
-    }
-
-    public void deleteAllPets() throws ResponseException {
-        var request = buildRequest("DELETE", "/pet", null);
-        sendRequest(request);
-    }
-
-    public PetList listPets() throws ResponseException {
-        var request = buildRequest("GET", "/pet", null);
-        var response = sendRequest(request);
-        return handleResponse(response, PetList.class);
-    }
-
     public AuthData register(UserData userData) throws ResponseException {
         var request = buildRequest("POST", "/user", userData);
         var response = sendRequest(request);
@@ -55,20 +31,20 @@ public class ServerFacade {
         return handleResponse(response, AuthData.class);
     }
 
-    public void logout(String authToken) throws ResponseException {
-        var request = buildRequest("DELETE", "/session", authToken);
-        sendRequest(request);
-    }
+//    public void logout(String authToken) throws ResponseException {
+//        var request = buildRequest("DELETE", "/session", authToken);
+//        sendRequest(request);
+//    }
+//
+//    public int create(String authToken, String gameName) throws ResponseException {
+//        var request = buildRequest("POST", "/game", gameName);
+//        var response = sendRequest(request);
+//        return handleResponse(response, Integer.class);
+//    }
 
-    public int create(String authToken, String gameName) throws ResponseException {
-        var request = buildRequest("POST", "/game", gameName);
-        var response = sendRequest(request);
-        return handleResponse(response, Integer.class);
-    }
-
-    public HashMap<Integer, GameData> list(String authToken) throws ResponseException {}
-
-    public void join(String authToken, String team, int gameID) throws ResponseException {}
+//    public HashMap<Integer, GameData> list(String authToken) throws ResponseException {}
+//
+//    public void join(String authToken, String team, int gameID) throws ResponseException {}
 
     private HttpRequest buildRequest(String method, String path, Object body) {
         var builder = HttpRequest.newBuilder()

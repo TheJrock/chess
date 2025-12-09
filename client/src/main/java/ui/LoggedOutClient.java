@@ -33,26 +33,20 @@ public class LoggedOutClient implements Client {
     }
 
     private String login(String[] params) throws ResponseException {
-        if (params.length >= 1) {
-
-            state = State.LOGGED_IN;
-            visitorName = String.join("-", params);
-            ws.enterPetShop(visitorName);
-            return String.format("You signed in as %s.", visitorName);
-        }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <yourname>");
+        throw new ResponseException(ResponseException.Code.ClientError,
+                "login not implemented");
     }
 
-    private String register(String[] params) {
+    private String register(String[] params) throws ResponseException {
+        throw new ResponseException(ResponseException.Code.ClientError,
+                "register not implemented");
     }
 
     @Override
-    public void quit() {
-
-    }
+    public void quit() {}
 
     @Override
     public String help() {
-        return "";
+        return "Commands: login, register, quit";
     }
 }
