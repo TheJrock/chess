@@ -3,8 +3,6 @@ package ui;
 import datamodel.GameData;
 import server.ServerFacade;
 
-import java.util.Arrays;
-
 public class LoggedInClient implements Client {
 
     private final ServerFacade facade;
@@ -37,18 +35,17 @@ public class LoggedInClient implements Client {
                 join <ID> [WHITE|BLACK] - to join a game as a player\s
                 observe <ID> - to watch a game\s
                 quit - to exit the program\s
-                help - to show all available commands\s
-                [LOGGED IN] >>>\s""");
+                help - to show all available commands\s""");
     }
 
     @Override
     public void eval(String input, Repl repl) {
-        String[] tokens = input.split(" ");
+        String[] tokens = input.split(" ", 2);
         String cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
-        String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
+        String params = (tokens.length > 1) ? tokens[1] : "";
         switch (cmd) {
             case "create" -> createGame(params);
-            case "list" -> listGames(params);
+            case "list" -> listGames();
             case "join" -> joinGame(params, repl);
             case "observe" -> observeGame(params, repl);
             case "logout" -> logout(repl);
@@ -67,14 +64,14 @@ public class LoggedInClient implements Client {
         }
     }
 
-    private void observeGame(String[] params, Repl repl) {
-        if (params.length != 1) {
+    private void observeGame(String params, Repl repl) {
+        if (params.isBlank()) {
             System.err.println("Invalid observe command. Type help for valid command patterns.");
             return;
         }
         int gameID;
         try {
-            gameID = Integer.parseInt(params[0]);
+            gameID = Integer.parseInt(params.trim());
         } catch (NumberFormatException e) {
             System.err.println("Game ID must be a valid integer. Type help for valid command patterns.");
             return;
@@ -94,7 +91,8 @@ public class LoggedInClient implements Client {
         }
     }
 
-    private void joinGame(String[] params, Repl repl) {
+    private void joinGame(String arg, Repl repl) {
+        String[] params = arg.split(" ", 2);
         if (params.length != 2) {
             System.err.println("Invalid join command. Type help for valid command patterns.");
             return;
@@ -125,7 +123,7 @@ public class LoggedInClient implements Client {
         }
     }
 
-    private void listGames(String[] params) {
+    private void listGames() {
         try {
             gameDataSet = facade.list(authToken);
             int gameID = 1;
@@ -138,12 +136,11 @@ public class LoggedInClient implements Client {
         }
     }
 
-    private void createGame(String[] params) {
-        if (params.length != 1) {
+    private void createGame(String gameName) {
+        if (gameName.isBlank()) {
             System.err.println("Invalid create command. Type help for valid command patterns.");
             return;
         }
-        String gameName = params[0];
         try {
             facade.create(authToken, gameName);
             gameDataSet = facade.list(authToken);

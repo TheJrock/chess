@@ -61,6 +61,8 @@ public class BoardRenderer {
     }
 
     public static String renderInitial(boolean white) {
-        return (white) ? render(new ChessBoard(), ChessGame.TeamColor.WHITE) : render(new ChessBoard(), ChessGame.TeamColor.BLACK);
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+        return (white) ? render(board, ChessGame.TeamColor.WHITE) : render(board, ChessGame.TeamColor.BLACK);
     }
 }

@@ -1,7 +1,6 @@
 package ui;
 
 import datamodel.UserData;
-import exception.ResponseException;
 import server.ServerFacade;
 
 import java.util.Arrays;
@@ -28,7 +27,7 @@ public class LoggedOutClient implements Client {
 
     private void login(String[] params, Repl repl) {
         if (params.length != 2) {
-            System.err.println("Invalid login command");
+            System.err.println("Invalid login command. Type help for valid command patterns.");
             return;
         }
         String username = params[0];
@@ -44,7 +43,7 @@ public class LoggedOutClient implements Client {
 
     private void register(String[] params, Repl repl) {
         if (params.length != 3) {
-            System.err.println("Invalid register command");
+            System.err.println("Invalid register command. Type help for valid command patterns.");
             return;
         }
         UserData userData = new UserData(params[0], params[1], params[2]);
@@ -70,7 +69,6 @@ public class LoggedOutClient implements Client {
                 register <USERNAME> <EMAIL> <PASSWORD> - to login as a new user\s
                 login <USERNAME> <PASSWORD> - to login as an existing user\s
                 quit - to exit the program\s
-                help - to show all available commands\s
-                [LOGGED OUT] >>>\s""");
+                help - to show all available commands\s""");
     }
 }

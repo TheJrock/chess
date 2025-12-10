@@ -88,6 +88,7 @@ public class ServerFacade {
         try {
             return client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
         }
     }
