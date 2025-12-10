@@ -88,7 +88,7 @@ public class LoggedInClient implements Client {
             facade.join(authToken, null, game.gameID());
             System.out.println("You are now observing " + game.gameName() + "!");
             System.out.println(BoardRenderer.renderInitial(true));
-            repl.setClient(new GameClient(facade, authToken, game.gameID(), null));
+//            repl.setClient(new GameClient(facade, authToken, game.gameID(), null));
         } catch (Exception e) {
             System.err.println("Something went wrong when observing game: " + e.getMessage());
         }
@@ -119,7 +119,7 @@ public class LoggedInClient implements Client {
             facade.join(authToken, teamColor, game.gameID());
             System.out.println("Joined " + game.gameName() + " as " + teamColor + "!");
             System.out.println(BoardRenderer.renderInitial(teamColor.equals("WHITE")));
-            repl.setClient(new GameClient(facade, authToken, game.gameID(), teamColor));
+//            repl.setClient(new GameClient(facade, authToken, game.gameID(), teamColor));
         } catch (Exception e) {
             System.err.println("Something went wrong when joining game: " + e.getMessage());
         }

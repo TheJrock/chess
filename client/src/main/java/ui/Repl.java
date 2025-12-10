@@ -1,43 +1,40 @@
 package ui;
 
+import server.ServerFacade;
 import java.util.Scanner;
-import static java.awt.Color.*;
 
 public class Repl {
+
     private Client client;
+
     public Repl(String serverUrl) {
-        client = new LoggedOutClient(serverUrl, this);
+        ServerFacade facade = new ServerFacade(serverUrl);
+        this.client = new LoggedOutClient(facade);
     }
 
     public void run() {
         System.out.println("Welcome to Chess! Please login or register to play a game.");
-        System.out.println(client.help());
+        client.help();
 
         Scanner scanner = new Scanner(System.in);
-        String result = "";
-        while (!result.equals("quit")) {
+
+        while (true) {
             printPrompt();
             String input = scanner.nextLine();
+
             try {
-                result = client.eval(input);
-                System.out.print(BLUE + result);
+                client.eval(input, this);
             } catch (Throwable e) {
-                String error = e.toString();
-                System.out.println(error);
+                System.out.println("Error: " + e.getMessage());
             }
         }
-        System.out.println("Goodbye!");
     }
-
-//    public void notify(Notification notification) {
-//        System.out.println(RED + notification.message());
-//        printPrompt();
-//    }
 
     private void printPrompt() {
-        System.out.print("\n" + ">>> " + GREEN);
+        System.out.print("\n>>> ");
     }
 
-    public void setClient(Client client) {
+    public void setClient(Client newClient) {
+        this.client = newClient;
     }
 }
