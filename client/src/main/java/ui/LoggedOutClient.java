@@ -37,7 +37,7 @@ public class LoggedOutClient implements Client {
             repl.setClient(new LoggedInClient(facade, authData.authToken()));
             System.out.println("Logged in as " + username);
         } catch (Exception e) {
-            System.out.println("Login failed: " + e.getMessage());
+            System.out.println("Login failed.");
         }
     }
 
@@ -52,7 +52,7 @@ public class LoggedOutClient implements Client {
             repl.setClient(new LoggedInClient(facade, authData.authToken()));
             System.out.println("Registered as " + userData.username());
         } catch (Exception e) {
-            System.out.println("Register failed: " + e.getMessage());
+            System.out.println("Register failed.");
         }
     }
 

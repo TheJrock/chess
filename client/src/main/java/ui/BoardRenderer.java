@@ -36,13 +36,7 @@ public class BoardRenderer {
                 if (piece == null) {
                     sb.append("   ");
                 } else {
-                    String letter = piece.getPieceType().toString().substring(0,1);
-                    if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                        letter = letter.toUpperCase();
-                    } else {
-                        letter = letter.toLowerCase();
-                    }
-                    sb.append(" ").append(letter).append(" ");
+                    sb.append(" ").append(piece).append(" ");
                 }
 
                 sb.append(RESET);

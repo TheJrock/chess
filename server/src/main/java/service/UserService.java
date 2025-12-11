@@ -119,7 +119,9 @@ public class UserService {
         String white = oldGame.whiteUsername();
         String black = oldGame.blackUsername();
 
-        if (team == null || team.isBlank()) {
+        if (team == null) team = "OBSERVER";
+
+        if (team.isBlank()) {
             throw new IllegalArgumentException("Unsupported team");
         }
 
@@ -132,7 +134,7 @@ public class UserService {
                 if (black != null) throw new DataAccessException("Spot already taken");
                 black = username;
             }
-            case "WHITE/BLACK" -> {
+            case "OBSERVER" -> {
                 // Join as observer
             }
             default -> throw new IllegalArgumentException("Unsupported team");

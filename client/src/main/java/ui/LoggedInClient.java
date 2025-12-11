@@ -34,6 +34,7 @@ public class LoggedInClient implements Client {
                 list - to list all games\s
                 join <ID> [WHITE|BLACK] - to join a game as a player\s
                 observe <ID> - to watch a game\s
+                logout - to logout\s
                 quit - to exit the program\s
                 help - to show all available commands\s""");
     }
@@ -60,18 +61,19 @@ public class LoggedInClient implements Client {
             repl.setClient(new LoggedOutClient(facade));
             System.out.println("Thanks for playing!");
         } catch (Exception e) {
-            System.err.println("Oops, there was an error logging out: " + e.getMessage());
+            System.err.println("Oops, there was an error logging out!");
         }
     }
 
-    private void observeGame(String params, Repl repl) {
-        if (params.isBlank()) {
+    private void observeGame(String arg, Repl repl) {
+        String[] params = arg.split(" ", 2);
+        if (params.length != 1) {
             System.err.println("Invalid observe command. Type help for valid command patterns.");
             return;
         }
         int gameID;
         try {
-            gameID = Integer.parseInt(params.trim());
+            gameID = Integer.parseInt(params[0]);
         } catch (NumberFormatException e) {
             System.err.println("Game ID must be a valid integer. Type help for valid command patterns.");
             return;
@@ -87,7 +89,7 @@ public class LoggedInClient implements Client {
             System.out.println(BoardRenderer.renderInitial(true));
 //            repl.setClient(new GameClient(facade, authToken, game.gameID(), null));
         } catch (Exception e) {
-            System.err.println("Something went wrong when observing game: " + e.getMessage());
+            System.err.println("Something went wrong when observing game.");
         }
     }
 
@@ -111,6 +113,7 @@ public class LoggedInClient implements Client {
         String teamColor = params[1].toUpperCase();
         if (!teamColor.equals("WHITE") && !teamColor.equals("BLACK")) {
             System.err.println("Invalid team color: " + teamColor + ". Type help for valid command patterns.");
+            return;
         }
         GameData game =  gameDataSet[gameID-1];
         try {
@@ -119,7 +122,7 @@ public class LoggedInClient implements Client {
             System.out.println(BoardRenderer.renderInitial(teamColor.equals("WHITE")));
 //            repl.setClient(new GameClient(facade, authToken, game.gameID(), teamColor));
         } catch (Exception e) {
-            System.err.println("Something went wrong when joining game: " + e.getMessage());
+            System.err.println("Something went wrong when joining game.");
         }
     }
 
@@ -132,7 +135,7 @@ public class LoggedInClient implements Client {
                 System.out.println(gameID++ + " | " + gameData.gameName());
             }
         } catch (Exception e) {
-            System.err.println("Something went wrong when listing games: " + e.getMessage());
+            System.err.println("Something went wrong when listing games.");
         }
     }
 
@@ -146,7 +149,7 @@ public class LoggedInClient implements Client {
             gameDataSet = facade.list(authToken);
             System.out.println("Created game " + gameName + "!");
         } catch (Exception e) {
-            System.err.println("Something went wrong when creating game: " + e.getMessage());
+            System.err.println("Something went wrong when creating game.");
         }
     }
 }
