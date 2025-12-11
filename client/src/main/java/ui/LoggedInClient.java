@@ -84,7 +84,7 @@ public class LoggedInClient implements Client {
         }
         GameData game = gameDataSet[gameID - 1];
         try {
-            facade.join(authToken, null, game.gameID());
+            facade.join(authToken, "OBSERVER", game.gameID());
             System.out.println("You are now observing " + game.gameName() + "!");
             System.out.println(BoardRenderer.renderInitial(true));
 //            repl.setClient(new GameClient(facade, authToken, game.gameID(), null));

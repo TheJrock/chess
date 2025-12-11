@@ -119,9 +119,7 @@ public class UserService {
         String white = oldGame.whiteUsername();
         String black = oldGame.blackUsername();
 
-        if (team == null) team = "OBSERVER";
-
-        if (team.isBlank()) {
+        if (team == null || team.isBlank()) {
             throw new IllegalArgumentException("Unsupported team");
         }
 
